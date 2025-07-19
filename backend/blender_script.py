@@ -3,6 +3,15 @@ import json
 import math
 import os
 import mathutils
+from furniture_rotations import furniture_rotations
+import sys
+
+# Add the absolute path to the 'backend' folder to sys.path
+script_dir = os.path.dirname(bpy.data.filepath)
+backend_path = os.path.abspath(os.path.join(script_dir, "backend"))
+
+if backend_path not in sys.path:
+    sys.path.append(backend_path)
 
 # === CONFIG ===
 INPUT_JSON = "backend/layout.json"
@@ -11,6 +20,9 @@ FURNITURE_DIR = "furniture"
 # === Clear scene ===
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
+
+from furniture_rotations import furniture_rotations
+
 
 # === Load layout ===
 with open(INPUT_JSON, "r") as f:
@@ -69,9 +81,11 @@ def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
         return
 
     # Create group empty at target position
+    # Create group empty at target position
     bpy.ops.object.empty_add(type='PLAIN_AXES', location=(x, y, z))
     group = bpy.context.active_object
     group.name = f"{name}_group"
+    group.rotation_euler = (0, 0, 0)
 
     for obj in new_objects:
         obj.select_set(True)
@@ -79,11 +93,14 @@ def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
         obj.location -= group.location
 
         # Rotate upright
-        obj.rotation_euler = (math.radians(-90), 0, 0)
+        # obj.rotation_euler = (0, 0, 0)
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
 
-        # Scale to match dimensions
+        # Scale to match width (X) and length (Z), keep Y (depth) small
         scale_object_to_exact_dimensions(obj, target_w, 1.0, target_l)
+        # group.rotation_euler = (math.radians(90), 0, math.radians(90))
+        group.rotation_euler = (0, math.radians(-90), 0)
+
 
 # === Place all furniture ===
 for key, value in layout.items():

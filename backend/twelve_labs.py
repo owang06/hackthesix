@@ -1,58 +1,17 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from dotenv import load_dotenv
+import re
+from twelvelabs import TwelveLabs
+from twelvelabs.models.task import Task
 import os
-import uuid
-
-app = Flask(__name__)
-CORS(app, origins=['http://localhost:8000', 'http://127.0.0.1:8000', 'http://localhost:5500', 'http://127.0.0.1:5500'], supports_credentials=True)
-UPLOAD_FOLDER = 'tempvideos'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-@app.route('/test', methods=['GET'])
-def test():
-    return jsonify({'message': 'Backend is working!'})
-
-@app.route('/upload', methods=['POST'])
-def upload_video():
-    print(f"Request method: {request.method}")
-    print(f"Request headers: {dict(request.headers)}")
-    print(f"Request files: {request.files}")
-    print(f"Request form: {request.form}")
-    
-    if 'video' not in request.files:
-        print("No 'video' key found in request.files")
-        return jsonify({'error': 'No video part in the request'}), 400
-    file = request.files['video']
-    if file.filename == '':
-        print("Empty filename")
-        return jsonify({'error': 'No selected file'}), 400
-    
-    # Save uploaded file with a unique name
-    filename = f"VID{uuid.uuid4().hex}.mp4"
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(filepath)
-    
-    # Return immediately and process video in background
-    import threading
-    thread = threading.Thread(target=process_video, args=(filepath,))
-    thread.daemon = True
-    thread.start()
-    
-    return jsonify({'message': 'Video uploaded and processing started', 'video_id': filename})
 
 def process_video(video_path):
     # Paste your existing code here but replace video_path with video_path variable
     # For example:
 
-    from dotenv import load_dotenv
-    import re
-    from twelvelabs import TwelveLabs
-    from twelvelabs.models.task import Task
-
     load_dotenv(dotenv_path=".env.local")
     API_KEY = os.getenv("TLAPI_KEY")
 
-    client = TwelveLabs(api_key=API_KEY)
+    client = TwelveLabs(api_key="tlk_1HBRP1S1J9CKQ524HVRED3ZP343A")
     import uuid
     INDEX_NAME = str(uuid.uuid4())
 
@@ -133,6 +92,4 @@ def process_video(video_path):
 
     print("File written.")
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    finished = True

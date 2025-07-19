@@ -2,6 +2,28 @@ import cv2
 import os
 import re
 from collections import defaultdict
+import glob
+
+def get_first_video_file(folder="tempvideos"):
+    # Find all video files with .mp4 extension (you can add others if needed)
+    video_files = glob.glob(os.path.join(folder, "*.mp4"))
+    if not video_files:
+        raise FileNotFoundError(f"No video files found in {folder}")
+    # Sort files alphabetically or by creation time if you want:
+    video_files.sort()
+    return video_files[0]
+
+def clear_folder(folder="tempvideos"):
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)  # remove file or link
+            elif os.path.isdir(file_path):
+                import shutil
+                shutil.rmtree(file_path)  # remove folder recursively
+        except Exception as e:
+            print(f"Failed to delete {file_path}. Reason: {e}")
 
 def parse_objects_by_timestamp(timestamps_file):
     # Dict: {timestamp_in_seconds (float): [object_name1, object_name2, ...]}
@@ -58,8 +80,10 @@ def extract_frames_from_objects(video_path, ts_to_objects, output_folder="pictur
     cap.release()
 
 if __name__ == "__main__":
-    video_file = "tempvideos/VID20250719105124.mp4"          # Replace with your video path
-    timestamps_file = "furniture_cleaned.txt"         # Your furniture objects and timestamps file
+    video_folder = "../tempvideos"
+    video_file = get_first_video_file(video_folder)         # Replace with your video path
+    timestamps_file = "../furniture_cleaned.txt"         # Your furniture objects and timestamps file
 
     ts_to_objects = parse_objects_by_timestamp(timestamps_file)
-    extract_frames_from_objects(video_file, ts_to_objects)
+    extract_frames_from_objects(video_file, ts_to_objects, "../pictures")
+    clear_folder(video_folder)

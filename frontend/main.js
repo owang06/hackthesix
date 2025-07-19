@@ -172,17 +172,18 @@ uploadVideoBtn.addEventListener('click', async () => {
     if (response.ok) {
       console.log('=== UPLOAD SUCCESS ===');
       uploadInProgress = false;
-      uploadCompleted = true;
       
-      // Store upload completion in localStorage
-      localStorage.setItem('uploadCompleted', 'true');
-      localStorage.setItem('videoId', result.video_id);
+      // Store video ID for status polling
+      const videoId = result.video_id;
+      localStorage.setItem('videoId', videoId);
       
-      updateStatus('Upload successful! Processing started. Video ID: ' + result.video_id, 'success');
-      uploadVideoBtn.textContent = 'Processing Complete';
+      updateStatus('Upload successful! Processing started...', 'success');
+      uploadVideoBtn.textContent = 'Processing...';
       uploadVideoBtn.disabled = true;
-      uploadVideoBtn.style.background = '#28a745'; // Green color for success
-      newUploadBtn.style.display = 'inline-block'; // Show new upload button
+      uploadVideoBtn.style.background = '#ff9500'; // Orange color for processing
+      
+      // Start polling for status updates
+      pollProcessingStatus(videoId);
       
       // Debug: Check if preview is still visible
       console.log('Preview display:', videoPreview.style.display);
@@ -251,6 +252,76 @@ uploadVideoBtn.addEventListener('click', async () => {
   }
 });
 
+// Poll processing status
+async function pollProcessingStatus(videoId) {
+  const maxAttempts = 60; // 5 minutes max (60 * 5 seconds)
+  let attempts = 0;
+  
+  const poll = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/status/${videoId}`);
+      const status = await response.json();
+      
+      if (response.ok) {
+        console.log('Status update:', status);
+        
+        // Update status message
+        updateStatus(status.message, status.status === 'error' ? 'error' : 'success');
+        
+        // Update progress if available
+        if (status.progress !== undefined) {
+          uploadVideoBtn.textContent = `Processing... ${status.progress}%`;
+        }
+        
+        if (status.status === 'completed') {
+          // Processing is complete
+          uploadCompleted = true;
+          localStorage.setItem('uploadCompleted', 'true');
+          
+          uploadVideoBtn.textContent = 'Processing Complete';
+          uploadVideoBtn.style.background = '#28a745'; // Green color for success
+          newUploadBtn.style.display = 'inline-block'; // Show new upload button
+          
+          updateStatus('Processing completed successfully!', 'success');
+          
+          // Show results if available
+          if (status.results) {
+            console.log('Processing results:', status.results);
+            updateStatus(`Processing completed! Extracted ${status.results.frames_extracted} frames.`, 'success');
+          }
+          
+          return; // Stop polling
+        } else if (status.status === 'error') {
+          // Processing failed
+          uploadVideoBtn.textContent = 'Processing Failed';
+          uploadVideoBtn.style.background = '#dc3545'; // Red color for error
+          uploadVideoBtn.disabled = false;
+          return; // Stop polling
+        }
+      } else {
+        console.error('Failed to get status:', status);
+      }
+    } catch (error) {
+      console.error('Error polling status:', error);
+    }
+    
+    // Continue polling if not complete
+    attempts++;
+    if (attempts < maxAttempts) {
+      setTimeout(poll, 5000); // Poll every 5 seconds
+    } else {
+      // Timeout
+      updateStatus('Processing timeout - please try again', 'error');
+      uploadVideoBtn.textContent = 'Processing Timeout';
+      uploadVideoBtn.style.background = '#dc3545';
+      uploadVideoBtn.disabled = false;
+    }
+  };
+  
+  // Start polling
+  poll();
+}
+
 // Update status message
 function updateStatus(message, type = '') {
   uploadStatus.textContent = message;
@@ -289,6 +360,10 @@ window.addEventListener('DOMContentLoaded', () => {
       uploadVideoBtn.disabled = true;
       uploadVideoBtn.style.background = '#28a745';
       newUploadBtn.style.display = 'inline-block';
+    } else if (storedVideoId) {
+      // If we have a video ID but no completion status, check if processing is still ongoing
+      updateStatus('Video selected: ' + storedFileName + ' - Checking processing status...', 'success');
+      pollProcessingStatus(storedVideoId);
     } else {
       updateStatus('Video selected: ' + storedFileName, 'success');
     }

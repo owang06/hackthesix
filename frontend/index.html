@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Video Upload</title>
+</head>
+<body>
+  <h2>Upload a Video</h2>
+  
+  <!-- Hidden file input -->
+  <input type="file" id="videoInput" accept="video/*" style="display:none" />
+  
+  <!-- Button to trigger file input -->
+  <button id="uploadBtn">Upload Video</button>
+
+  <script>
+  const uploadBtn = document.getElementById('uploadBtn');
+  const videoInput = document.getElementById('videoInput');
+
+  uploadBtn.addEventListener('click', () => {
+      videoInput.click();
+  });
+
+  videoInput.addEventListener('change', () => {
+      const file = videoInput.files[0];
+      if (file) {
+      // Prepare FormData to send
+      const formData = new FormData();
+      formData.append('video', file);
+
+      // Upload to backend
+      fetch('http://127.0.0.1:5000/upload', {
+          method: 'POST',
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          alert('Upload successful! Processing started.');
+          console.log('Backend response:', data);
+      })
+      .catch(err => {
+          alert('Upload failed.');
+          console.error(err);
+      });
+      }
+  });
+  </script>
+</body>
+</html>

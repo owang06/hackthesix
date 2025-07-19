@@ -1,0 +1,9 @@
+{
+    "room": {"l": 14, "w": 10, "x": 0, "y": 0, "rotation": 0},
+    "bed": {"l": 5, "w": 6, "x": 7, "y": 5, "rotation": 0},
+    "left_night_table": {"l": 2, "w": 2, "x": -1, "y": -1, "rotation": 0},
+    "right_night_table": {"l": 2, "w": 2, "x": 7, "y": -1, "rotation": 0},
+    "wardrobe": {"l": 6, "w": 2, "x": 9, "y": -5, "rotation": 90},
+    "door": {"l": 2.5, "w": 0, "x": -2.75, "y": -10, "rotation": 0},
+    "window": {"l": 2, "w": 0, "x": 10, "y": -6, "rotation": 90}
+  }

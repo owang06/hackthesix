@@ -12,4 +12,8 @@ launch and go
 
 <br>
 foot.print 2025. All Rights Reserved.<br>
+<<<<<<< HEAD
 Owen, Samuel, Jasmehar, Srija
+=======
+Owen, Samuel, Jasmehar, Srija
+>>>>>>> merge

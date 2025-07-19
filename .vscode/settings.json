@@ -1,0 +1,6 @@
+{
+    "liveServer.settings.fullBrowserReload": false,
+    "liveServer.settings.useLocalIp": false,
+    "liveServer.settings.port": 5500,
+    "liveServer.settings.root": "/frontend"
+} 

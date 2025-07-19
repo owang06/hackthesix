@@ -1,0 +1,20 @@
+Bed: 00:00
+Desk: 00:03
+Chair: 00:03
+Wardrobe: 00:05
+Mini-fridge: 00:05
+Laptop: 00:03
+Computer monitor: 00:03
+Bookshelf: 00:03
+Rug: 00:00
+Window: 00:02
+Wall-mounted plant: 00:00
+Wall-mounted artwork: 00:00
+Wall-mounted lamp: 00:03
+Wall-mounted mirror: 00:05
+Wall-mounted hooks: 00:05
+Wall-mounted hangers: 00:05
+Wall-mounted shelf: 00:03
+Wall-mounted drawer: 00:05
+Wall-mounted cabinet: 00:05
+Wall-mounted door: 00:05

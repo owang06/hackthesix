@@ -101,16 +101,21 @@ def process_video(video_path):
     """
     # temperature=0.2
     )
+    
     # 6. Process the results
     print(f"{text.data}")
 
-    matches = re.findall(r"- (\w[\w\- ]*):.*(\[\d+s \(\d+:\d+\)\])", text.data)
+    # Proper regex pattern
+    matches = re.findall(r"- (.*?): \d+ - Visible last at \[\d+s \((\d{2}:\d{2})\)\]", text.data)
 
-    with open("output.txt", "w") as f:
-        print(f)
+    # Confirm all matches
+    print(f"Matched {len(matches)} lines.")
+
+    with open("furniture_cleaned.txt", "w") as f:
         for obj, timestamp in matches:
-            print(obj, " ", timestamp)
-            f.write(f"{obj} {timestamp}\n")
+            f.write(f"{obj}: {timestamp}\n")
+
+    print("File written.")
 
 
 if __name__ == "__main__":

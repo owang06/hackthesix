@@ -4,15 +4,16 @@ from dotenv import load_dotenv
 from twelvelabs import TwelveLabs
 from twelvelabs.models.task import Task
 
+# Load API Key
 load_dotenv(dotenv_path=".env.local")
-
 API_KEY = os.getenv("TLAPI_KEY")
 
 # 1. Initialize the client
 client = TwelveLabs(api_key=API_KEY)
 
-VIDEO_PATH = "/Users/samuelliao/hackthesix/tempvideos/IMG_1756.MP4"
-INDEX_NAME = "temp11278361"
+
+VIDEO_PATH = "<Temp Video Path>"
+INDEX_NAME = "<Temp Index Name>"
 
 # 2. Create an index
 models = [

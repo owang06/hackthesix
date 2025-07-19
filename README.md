@@ -1,11 +1,15 @@
-# hackthesix
-Foot.print for rooms 
-Scans the room -> Detects and measures furniture -> Optimizes layout based on preferences -> Generates the layout -> Visualizes it using 3d design...?
+# foot.print
 
-## User Stories
+foot.print is used for getting the best feng shui layout for your room using ai. only a video of your room is needed.
 
-As a user, I want to be able to submit a _____ image of a room to Twelve labs.
-As a user, I want to be able to retrieve the current layout of any room submitted.
-As a user, I want to be able to retrieve a list of any items in the room submitted.
+## Installation
 
-As a user, I want to be able to be able to 3D model the final layout returned.  
+install the right libraries...
+   
+## Usage
+
+launch and go
+
+<br>
+foot.print 2025. All Rights Reserved.<br>
+Owen, Samuel, Jasmehar, Srija

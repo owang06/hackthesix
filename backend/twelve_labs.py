@@ -1,5 +1,4 @@
 import os
-import requests
 from dotenv import load_dotenv
 from twelvelabs import TwelveLabs
 from twelvelabs.models.task import Task
@@ -12,7 +11,7 @@ API_KEY = os.getenv("TLAPI_KEY")
 client = TwelveLabs(api_key=API_KEY)
 
 
-VIDEO_PATH = "<Temp Video Path>"
+VIDEO_PATH = "tempvideos/IMG_1756.MP4"
 INDEX_NAME = "<Temp Index Name>"
 
 # 2. Create an index
@@ -43,7 +42,7 @@ print(f"The unique identifier of your video is {task.video_id}.")
 
 # 5. Perform open-ended analysis
 text = client.analyze(
-  video_id=task.video_id,
+  video_id=task.video_id,  
   prompt="Identify the timestamps for when the first laptop appears",
   # temperature=0.2
 )

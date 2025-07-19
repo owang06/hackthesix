@@ -2,7 +2,7 @@ import os
 import PIL.Image
 import google.generativeai as genai
 
-genai.configure(api_key="AIzaSyBgJYxaEpQejrdBrzyQWTSl5-880gQ58rw")
+genai.configure(api_key="AIzaSyBOQGU05bU_oyuiaHmC1VBgvfFH921M0f8")
 
 PICTURES_FOLDER = "pictures"
 
@@ -25,9 +25,11 @@ def generate_prompt(objects):
     objects_str = " ".join(objects)
     prompt = (
         f"There are {n} objects visible in this picture: {objects_str}. "
-        f"Estimate the real life dimensions of these objects. "
+        f"Estimate the real life dimensions of all of these objects IN METERS. "
         f"Be specific, no ranges."
         f"Also do not tell me its not easily measurable. try your best to estimate. if you cant, tell me its 0"
+        f"Finally, give me answers in the format [object, length, width, height], if any field is unknown enter 0"
+        f"Dont give filler words, only respond with the list"
     )
     return prompt
 
@@ -43,7 +45,7 @@ def process_images():
             continue
 
         prompt = generate_prompt(objects)
-        print(f"Processing {filename} with prompt:\n{prompt}\n")
+        # print(f"Processing {filename} with prompt:\n{prompt}\n")
 
         img = PIL.Image.open(filepath)
         model = genai.GenerativeModel('gemini-1.5-flash')

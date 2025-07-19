@@ -5,8 +5,9 @@ import os
 import mathutils
 
 # === CONFIG ===
-INPUT_JSON = "backend/layout.json"
-FURNITURE_DIR = "furniture"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_JSON = os.path.join(BASE_DIR, "layout.json")
+FURNITURE_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "furniture"))
 
 # === Clear scene ===
 bpy.ops.object.select_all(action='SELECT')
@@ -19,13 +20,15 @@ with open(INPUT_JSON, "r") as f:
 # === Rotation and Axis Mapping Configs ===
 furniture_rotations = {
     "bed": (math.radians(-90), 0, 0),
-    "chair": (0, 0, 0),
-    "desk": (0, 0, 0),
+    "chair": (math.radians(-90), 0, 0),
+    "desk": (math.radians(-90), 0, 0),
     "nightstand": (math.radians(-90), 0, 0),
-    "sofa": (0, 0, 0),
+    "couch": (math.radians(-90), 0, 0),
     "table": (0, 0, 0),
     "wardrobe": (0, 0, 0),
-    "bookshelf": (0, 0, 0)
+    "bookshelf": (0, 0, 0),
+    "window": (0,0,0),
+    "fridge": (math.radians(-90), 0, 0)
 }
 
 # These define how the original x/y/z inputs from layout map to Blender's X/Y/Z
@@ -34,10 +37,11 @@ furniture_coordinate_mapping = {
     "chair": {"x": "x", "y": "y", "z": "z"},
     "desk": {"x": "x", "y": "y", "z": "z"},
     "nightstand": {"x": "z", "y": "y", "z": "x"},
-    "sofa": {"x": "x", "y": "y", "z": "z"},
+    "couch": {"x": "x", "y": "y", "z": "z"},
     "table": {"x": "x", "y": "y", "z": "z"},
     "wardrobe": {"x": "x", "y": "y", "z": "z"},
-    "bookshelf": {"x": "x", "y": "y", "z": "z"}
+    "bookshelf": {"x": "x", "y": "y", "z": "z"},
+    "window": {"x": "x", "y": "y", "z": "z"}
 }
 
 room_size = layout.get("room", {})

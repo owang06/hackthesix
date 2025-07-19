@@ -34,8 +34,8 @@ def extract_frame_at_time(video_path, timestamp_seconds, output_path):
 
 # -------------------------------
 # Extract frame from video
-video_file = "/Users/whran/Downloads/IMG_1756.mp4"
-timestamp = 6  # seconds
+video_file = "tempvideos/IMG_0878.MOV"
+timestamp = 4  # seconds
 frame_path = "extracted_frame.jpg"
 image_path = extract_frame_at_time(video_file, timestamp, frame_path)
 

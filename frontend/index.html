@@ -1,50 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Video Upload</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Apple-Inspired Landing</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h2>Upload a Video</h2>
+  <nav class="navbar">
+    <div class="nav-logo"></div>
+    <ul class="nav-links">
+    </ul>
+  </nav>
   
-  <!-- Hidden file input -->
-  <input type="file" id="videoInput" accept="video/*" style="display:none" />
+  <section class="hero">
+    <h1 class="hero-title">Video Analysis</h1>
+    <p class="hero-subtitle">Upload your video to analyze furniture and objects</p>
+    
+    <div class="upload-container">
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-content">
+          <div class="upload-icon">📹</div>
+          <h3>Upload Your Video</h3>
+          <p>Drag and drop or click to select a video file</p>
+          <input type="file" id="videoInput" accept="video/*" hidden>
+          <button type="button" id="uploadBtn" class="upload-btn">Choose Video</button>
+        </div>
+      </div>
+      
+      <div class="video-preview" id="videoPreview" style="display: none;">
+        <video id="previewVideo" controls>
+          Your browser does not support the video tag.
+        </video>
+        <div class="preview-actions">
+          <button id="uploadVideoBtn" class="cta-btn">Upload & Analyze</button>
+          <button id="changeVideoBtn" class="secondary-btn">Choose Different Video</button>
+          <button id="newUploadBtn" class="secondary-btn" style="display: none;">Upload Another Video</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="uploadStatus" class="upload-status"></div>
+  </section>
   
-  <!-- Button to trigger file input -->
-  <button id="uploadBtn">Upload Video</button>
-
-  <script>
-  const uploadBtn = document.getElementById('uploadBtn');
-  const videoInput = document.getElementById('videoInput');
-
-  uploadBtn.addEventListener('click', () => {
-      videoInput.click();
-  });
-
-  videoInput.addEventListener('change', () => {
-      const file = videoInput.files[0];
-      if (file) {
-      // Prepare FormData to send
-      const formData = new FormData();
-      formData.append('video', file);
-
-      // Upload to backend
-      fetch('http://127.0.0.1:5000/upload', {
-          method: 'POST',
-          body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-          alert('Upload successful! Processing started.');
-          console.log('Backend response:', data);
-      })
-      .catch(err => {
-          alert('Upload failed.');
-          console.error(err);
-      });
-      }
-  });
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>
+

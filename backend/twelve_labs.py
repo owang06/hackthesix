@@ -4,16 +4,27 @@ import os
 import uuid
 
 app = Flask(__name__)
-CORS(app)
-UPLOAD_FOLDER = 'hackthesix/tempvideos'
+CORS(app, origins=['http://localhost:8000', 'http://127.0.0.1:8000', 'http://localhost:5500', 'http://127.0.0.1:5500'], supports_credentials=True)
+UPLOAD_FOLDER = 'tempvideos'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify({'message': 'Backend is working!'})
 
 @app.route('/upload', methods=['POST'])
 def upload_video():
+    print(f"Request method: {request.method}")
+    print(f"Request headers: {dict(request.headers)}")
+    print(f"Request files: {request.files}")
+    print(f"Request form: {request.form}")
+    
     if 'video' not in request.files:
+        print("No 'video' key found in request.files")
         return jsonify({'error': 'No video part in the request'}), 400
     file = request.files['video']
     if file.filename == '':
+        print("Empty filename")
         return jsonify({'error': 'No selected file'}), 400
     
     # Save uploaded file with a unique name
@@ -21,10 +32,13 @@ def upload_video():
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     file.save(filepath)
     
-    # Now run your existing processing code, replacing video_path with filepath
-    result = process_video(filepath)
+    # Return immediately and process video in background
+    import threading
+    thread = threading.Thread(target=process_video, args=(filepath,))
+    thread.daemon = True
+    thread.start()
     
-    return jsonify({'message': 'Video uploaded and processing started', 'video_id': result})
+    return jsonify({'message': 'Video uploaded and processing started', 'video_id': filename})
 
 def process_video(video_path):
     # Paste your existing code here but replace video_path with video_path variable
@@ -98,6 +112,8 @@ def process_video(video_path):
     8. ***VERY IMPORTANT*** MAKE SURE THAT THE TIMESTAMP PROVIDED FOR EACH OBJECT IS THE LAST TIMEFRAME
     WHERE THE OBJECT IS STILL VISIBLE
     9. ***IMPORTANT*** DOUBLE CHECK IF DESK AND CHAIR ARE STILL VISIBLE AT 3 SECONDS
+    10. ***IMPORTANT*** MAKE SURE THAT OBJECTS RELATED TO MORE A GENERAL FURNITURE ARE IGNORED
+    (For example, Closet Doors, Closet Hooks, and Closet Hangers are not furniture, especially when there is already a closet and you can just say closet)
     """
     # temperature=0.2
     )

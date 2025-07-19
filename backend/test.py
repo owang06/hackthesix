@@ -32,8 +32,6 @@ else:
 
 
 
-
-
 # Upload your local video file using `video_file`
 with open("/Users/whran/Downloads/IMG_1756.mp4", "rb") as f:
     task = client.task.create(

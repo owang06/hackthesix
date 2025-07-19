@@ -3,50 +3,50 @@
     {
       "bufferView": 2,
       "componentType": 5126,
-      "count": 29736,
+      "count": 4945,
       "max": [
-        945.201904296875,
-        1217.34326171875,
-        915.857666015625
+        46.544071197509766,
+        17.69724464416504,
+        13.210555076599121
       ],
       "min": [
-        -894.2639770507813,
-        -1133.4818115234375,
-        0.0
+        -5.4536638259887695,
+        -6.736282825469971,
+        1.599208950996399
       ],
       "type": "VEC3"
     },
     {
       "bufferView": 2,
-      "byteOffset": 356832,
+      "byteOffset": 59340,
       "componentType": 5126,
-      "count": 29736,
+      "count": 4945,
       "max": [
-        1.0,
-        1.0,
+        0.9999997615814209,
+        0.9999832510948181,
         1.0
       ],
       "min": [
-        -1.0,
-        -1.0,
-        -1.0
+        -0.9999998211860657,
+        -0.999998927116394,
+        -0.9999991059303284
       ],
       "type": "VEC3"
     },
     {
       "bufferView": 3,
       "componentType": 5126,
-      "count": 29736,
+      "count": 4945,
       "max": [
-        1.0,
-        1.0,
-        1.0,
+        0.9994336366653442,
+        0.9999991059303284,
+        0.9999510049819946,
         1.0
       ],
       "min": [
-        -1.0,
-        -1.0,
-        -1.0,
+        -0.9998929500579834,
+        -0.9943289160728455,
+        -0.9999323487281799,
         -1.0
       ],
       "type": "VEC4"
@@ -54,61 +54,61 @@
     {
       "bufferView": 1,
       "componentType": 5126,
-      "count": 29736,
+      "count": 4945,
       "max": [
-        0.99760502576828,
-        0.9980469942092896
+        0.9864220023155212,
+        0.9813359975814819
       ],
       "min": [
-        0.0019529999699443579,
-        0.0019529999699443579
+        0.0019499999471008778,
+        0.0052999998442828655
       ],
       "type": "VEC2"
     },
     {
       "bufferView": 0,
       "componentType": 5125,
-      "count": 156414,
+      "count": 27117,
       "type": "SCALAR"
     }
   ],
   "asset": {
     "extras": {
-      "author": "Dmitry Susidko (https://sketchfab.com/susidko.dima)",
+      "author": "andree (https://sketchfab.com/maestronoov)",
       "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
-      "source": "https://sketchfab.com/3d-models/bed-cd0e10e55ebf486eaf9c0a7bcb2cf0ab",
+      "source": "https://sketchfab.com/3d-models/bed-ea1152935b9049e4a0fcc949ebd31fa1",
       "title": "Bed"
     },
-    "generator": "Sketchfab-12.66.0",
+    "generator": "Sketchfab-12.65.0",
     "version": "2.0"
   },
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 625656,
+      "byteLength": 108468,
       "name": "floatBufferViews",
       "target": 34963
     },
     {
       "buffer": 0,
-      "byteLength": 237888,
-      "byteOffset": 625656,
+      "byteLength": 39560,
+      "byteOffset": 108468,
       "byteStride": 8,
       "name": "floatBufferViews",
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 713664,
-      "byteOffset": 863544,
+      "byteLength": 118680,
+      "byteOffset": 148028,
       "byteStride": 12,
       "name": "floatBufferViews",
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 475776,
-      "byteOffset": 1577208,
+      "byteLength": 79120,
+      "byteOffset": 266708,
       "byteStride": 16,
       "name": "floatBufferViews",
       "target": 34962
@@ -116,44 +116,62 @@
   ],
   "buffers": [
     {
-      "byteLength": 2052984,
+      "byteLength": 345828,
       "uri": "scene.bin"
     }
   ],
+  "extensionsRequired": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
+  "extensionsUsed": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
   "images": [
     {
-      "uri": "textures/Material_baseColor.jpeg"
+      "uri": "textures/material_0_diffuse.png"
     },
     {
-      "uri": "textures/Material_metallicRoughness.png"
+      "uri": "textures/material_0_specularGlossiness.png"
     },
     {
-      "uri": "textures/Material_normal.png"
+      "uri": "textures/material_0_normal.png"
     }
   ],
   "materials": [
     {
       "doubleSided": true,
-      "name": "Material",
-      "normalTexture": {
-        "index": 2
-      },
-      "occlusionTexture": {
-        "index": 1
-      },
-      "pbrMetallicRoughness": {
-        "baseColorTexture": {
-          "index": 0
-        },
-        "metallicRoughnessTexture": {
-          "index": 1
+      "extensions": {
+        "KHR_materials_pbrSpecularGlossiness": {
+          "diffuseFactor": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "diffuseTexture": {
+            "index": 0
+          },
+          "glossinessFactor": 1.0,
+          "specularFactor": [
+            0.0322027439,
+            0.0322027439,
+            0.0322027439
+          ],
+          "specularGlossinessTexture": {
+            "index": 1
+          }
         }
+      },
+      "name": "material_0",
+      "normalTexture": {
+        "index": 2,
+        "scale": 0.751714939
       }
     }
   ],
   "meshes": [
     {
-      "name": "defaultMaterial",
+      "name": "Object_0",
       "primitives": [
         {
           "attributes": {
@@ -198,53 +216,11 @@
       "children": [
         2
       ],
-      "matrix": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        -4.371139006309477e-08,
-        0.999999999999999,
-        0.0,
-        0.0,
-        -0.999999999999999,
-        -4.371139006309477e-08,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ],
-      "name": "Collada visual scene group"
-    },
-    {
-      "children": [
-        3
-      ],
-      "matrix": [
-        0.1,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        -0.1,
-        0.0,
-        0.0,
-        0.1,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ],
-      "name": "liv_queen_bed_ss001"
+      "name": "bed.obj.cleaner.materialmerger.gles"
     },
     {
       "mesh": 0,
-      "name": "defaultMaterial"
+      "name": "Object_2"
     }
   ],
   "samplers": [

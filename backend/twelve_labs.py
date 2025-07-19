@@ -71,31 +71,34 @@ def process_video(video_path):
     text = client.analyze(
     video_id=task.video_id,  
     prompt="""
-    1. Tell me EVERY SINGLE furniture object (eg table, chair, computer, dresser, bed, etc) 
+    1. Tell me EVERY piece of furniture (eg table, chair, computer, dresser, bed, etc) 
     that you see in this video, along with how many of each you see. 
-    2. **Important** Give me a timestamp for each object where at least one of the objects is fully visible in frame
-    3. **Important** Make sure to get every object possible regardless of how small or simple.
+    2. Give me the latest/last timestamp for each object where at least one of the objects is fully visible in frame
+    3. Ensure that the objects are relevant to the floorplan. (For example, coffee machine or string lights is irrelevant)
     4. **Important** Tell me how many items there are total of each object.
     5. Provide a response in a similar style as this template 
     but with temp replaced with the respective objects found, # replaced with their respective timestamps, 
     and 'n' replaced with the respective number of each object found. 
     Also extending or truncating the template for however many items there are:
 
-    In the video, the following furniture objects are visible:
-        temp: n - Visible at _____ [#s (##:##)].
-        temp: n - Visible at _____ [#s (##:##)].
-        temp: n - Visible at _____ [#s (##:##)].
-        temp: n - Visible at _____ [#s (##:##)].
-        temp: n - Visible at _____ [#s (##:##)].
-        temp: n - Visible at _____ [#s (##:##)].
-        temp: n - Visible at _____ [#s (##:##)].
-        temp: n - Visible at _____ [#s (##:##)].
+    In the video, the following pieces of furniture are visible:
+        temp: n - Visible last at [#s (##:##)].
+        temp: n - Visible last at [#s (##:##)].
+        temp: n - Visible last at [#s (##:##)].
+        temp: n - Visible last at [#s (##:##)].
+        temp: n - Visible last at [#s (##:##)].
+        temp: n - Visible last at [#s (##:##)].
+        temp: n - Visible last at [#s (##:##)].
+        temp: n - Visible last at [#s (##:##)].
         ...
         ...
         ...
     6. **IMPORTANT** I ONLY WANT 1 TIMESTAMP FOR EACH OBJECT.
     7. **IMPORTANT** MAKE SURE THAT THE OBJECTS ARE VISIBLE AT THE TIMESTAMP PROVIDED.
-    """,
+    8. ***VERY IMPORTANT*** MAKE SURE THAT THE TIMESTAMP PROVIDED FOR EACH OBJECT IS THE LAST TIMEFRAME
+    WHERE THE OBJECT IS STILL VISIBLE
+    9. ***IMPORTANT*** DOUBLE CHECK IF DESK AND CHAIR ARE STILL VISIBLE AT 3 SECONDS
+    """
     # temperature=0.2
     )
     # 6. Process the results

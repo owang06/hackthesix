@@ -7,7 +7,7 @@ def parse_objects_by_timestamp(timestamps_file):
     # Dict: {timestamp_in_seconds (float): [object_name1, object_name2, ...]}
     ts_to_objects = defaultdict(list)
 
-    pattern = re.compile(r"(.+?) \[(\d+)s .*]")  # matches: ObjectName [2s (00:02)]
+    pattern = re.compile(r"(.+?) (\d{2}:\d{2})")  # matches: ObjectName 00:02
 
     with open(timestamps_file, 'r', encoding='utf-8') as f:
         for line in f:
@@ -17,7 +17,8 @@ def parse_objects_by_timestamp(timestamps_file):
             match = pattern.match(line)
             if match:
                 obj_name = match.group(1).strip()
-                ts_sec = 1 + int(match.group(2))
+                minutes, seconds = map(int, match.group(2).split(":"))
+                ts_sec = minutes * 60 + seconds  # or `1 + minutes * 60 + seconds` if you want the offset
                 ts_to_objects[ts_sec].append(obj_name)
             else:
                 print(f"Warning: line didn't match expected format: {line}")
@@ -57,8 +58,8 @@ def extract_frames_from_objects(video_path, ts_to_objects, output_folder="pictur
     cap.release()
 
 if __name__ == "__main__":
-    video_file = "hackthesix/tempvideos/VID20250719105124.mp4"          # Replace with your video path
-    timestamps_file = "output.txt"         # Your furniture objects and timestamps file
+    video_file = "tempvideos/VID20250719105124.mp4"          # Replace with your video path
+    timestamps_file = "furniture_cleaned.txt"         # Your furniture objects and timestamps file
 
     ts_to_objects = parse_objects_by_timestamp(timestamps_file)
     extract_frames_from_objects(video_file, ts_to_objects)

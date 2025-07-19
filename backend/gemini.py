@@ -28,7 +28,7 @@ def generate_prompt(objects):
         f"Estimate the real life dimensions of all of these objects IN METERS. "
         f"Be specific, no ranges."
         f"Also do not tell me its not easily measurable. try your best to estimate. if you cant, tell me its 0"
-        f"Finally, give me answers in the format [object, length, width, height], if any field is unknown enter 0"
+        f"Finally, give me answers in the format of a dictionary {{ 'object': 'Trash Can', 'length': 0.3, 'width': 0.3, 'height': 0.4 }}, if any field is unknown enter 0"
         f"Dont give filler words, only respond with the list"
     )
     return prompt

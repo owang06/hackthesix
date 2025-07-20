@@ -2,7 +2,6 @@ import os
 import json
 from dotenv import load_dotenv
 import google.generativeai as genai
-from coordinates_llm import get_coordinates
 
 # Load environment variables
 load_dotenv(".env.local")
@@ -17,8 +16,13 @@ if not GOOGLE_API_KEY:
 # Create the model (use "gemini-pro", not "models/gemini-pro")
 model = genai.GenerativeModel("gemini-2.5-pro")
 
-def get_coordinates_validation(input_json):
-    prompt = f"""
+def get_coordinates_validation(input_text):
+  try:
+    input_json = json.dumps(input_text)
+  except:
+    input_json = input_text
+    
+  prompt = f"""
 Analyze and validate each piece of furniture in the given data. If any furniture overlaps or is outside the room dimensions, adjust the coordinates accordingly. 
 
 You have to output coordinates for each piece of furniture in the room following the example JSON format below, using their appropriate names and dimensions:
@@ -31,21 +35,21 @@ The center of the room is at (0,0,0) and coordinates should refer to the center 
 Only change the coordinates and rotation of the furniture, do not change the dimensions.
 
 Room layout and furniture data (in JSON):
-{json.dumps(input_json)}
+{input_json}
 
 Output only the JSON response, no other text.
 
 """
-    # Generate the response
-    response = model.generate_content(prompt)
+  # Generate the response
+  response = model.generate_content(prompt)
 
-    # Strip code block wrappers if they exist
-    content = response.text
-    if content.startswith("```json"):
-        content = content.strip("```json").strip("```").strip()
-    
-    return content
-    # return json.loads(content)
+  # Strip code block wrappers if they exist
+  content = response.text
+  if content.startswith("```json"):
+      content = content.strip("```json").strip("```").strip()
+  
+  return content
+  # return json.loads(content)
 
 # === TEST ===
 if __name__ == "__main__":

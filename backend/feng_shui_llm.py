@@ -56,8 +56,8 @@ Ensure the response makes sense logically (chair by the desk, not wasting space,
 
     # Strip code block wrappers if they exist
     content = response.text
-    # if content.startswith("```json"):
-    #     content = content.strip("```json").strip("```").strip()
+    if content.startswith("```json"):
+        content = content.strip("```json").strip("```").strip()
 
     return content
 

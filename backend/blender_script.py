@@ -6,7 +6,7 @@ import mathutils
 
 # === CONFIG ===
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_JSON = os.path.join(BASE_DIR, "layout.json")
+INPUT_JSON = os.path.join(BASE_DIR, "../validated_layout.json")
 FURNITURE_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "furniture"))
 
 # === Clear scene ===
@@ -17,18 +17,20 @@ bpy.ops.object.delete(use_global=False)
 with open(INPUT_JSON, "r") as f:
     layout = json.load(f)
 
+layout = json.loads(layout)
+print("layout: " + layout.__str__())
 # === Rotation and Axis Mapping Configs ===
 furniture_rotations = {
     "bed": (math.radians(-90), 0, 0),
-    "chair": (0, 0, 0),
-    "desk": (math.radians(-90), 0, 0),
-    "nightstand": (math.radians(-90), 0, 0),
-    "couch": (math.radians(-90), 0, 0),
+    "chair": (math.radians(-90), 0, 0),
+    "desk": (0, 0, 0),
+    "nightstand": (0, 0, 0),
+    "couch": (0, 0, 0),
     "table": (0, 0, 0),
     "wardrobe": (0, 0, 0),
     "bookshelf": (0, 0, 0),
     "window": (0,0,0),
-    "fridge": (math.radians(-90), 0, 0)
+    "fridge": (0, 0, 0)
 }
 
 # These define how the original x/y/z inputs from layout map to Blender's X/Y/Z
@@ -159,7 +161,7 @@ def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
 
         
 # === Place all furniture ===
-for key, value in layout2.items():
+for key, value in layout.items():
     if key == "room":
         continue
 
@@ -173,7 +175,23 @@ for key, value in layout2.items():
         target_l=value.get("l", 2)
     )
 
+#Target export path: ../blender_model/room.glb
+output_path = os.path.abspath(os.path.join(BASE_DIR, "..", "blender_model", "room.glb"))
 
+#Export the current scene as GLB
+bpy.ops.export_scene.gltf(
+    filepath=output_path,
+    export_format='GLB',
+    export_apply=True,
+    export_yup=True,
+    export_texcoords=True,
+    export_normals=True,
+    export_materials='EXPORT',
+    export_animations=False
+)
+
+
+print(f"✅ Exported room.glb to: {output_path}")
 
 
 

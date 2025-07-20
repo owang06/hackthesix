@@ -2,6 +2,8 @@ import os
 import PIL.Image
 import google.generativeai as genai
 from dotenv import load_dotenv
+from feng_shui_llm import get_fengshui_recommendations
+from coordinates_validation_llm import get_coordinates_validation
 
 load_dotenv(dotenv_path=".env.local")
 API_KEY = os.getenv("GAPI_KEY")
@@ -101,6 +103,7 @@ def process_images():
                             if isinstance(obj_data, dict) and 'object' in obj_data:
                                 all_objects.append(obj_data)
                         except:
+                            print("failed to parse dictionary:", dict_str)
                             pass  # Skip if parsing fails
                     f.write("\n")
                 print(f"Wrote {len(dict_matches)} dictionary(ies) to {output_file}")
@@ -119,8 +122,26 @@ def process_images():
         with open(output_file, "a") as f:
             f.write(f"# Room Size Estimation\n")
             f.write(f"{{'length': {room_size['length']}, 'width': {room_size['width']}}}\n")
-        
         print(f"Room size written to {output_file}")
+        
+        with open(output_file, "r") as f:
+            measurements_text = f.read()
+
+        fengshui_result = get_fengshui_recommendations(measurements_text)
+        print("Feng Shui Result:\n", fengshui_result)
+        
+        if fengshui_result:
+            parsed_result = json.loads(fengshui_result)
+            validation_result = get_coordinates_validation(parsed_result)
+            print("Validation Result:\n", validation_result)
+            # Save to layout.json
+            with open("validated_layout.json", "w") as f:
+                json.dump(validation_result, f, indent=2)
+            print("Saved validation result to layout.json")
+        else:
+            print("Feng Shui result is empty. Skipping coordinate validation.")
+
+                
 
 def estimate_room_size(objects):
     """
@@ -186,6 +207,7 @@ def estimate_room_size(objects):
             'length': 4.0,  # Default room size
             'width': 3.0
         }
+
 
 if __name__ == "__main__":
     process_images()

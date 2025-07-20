@@ -5,3 +5,4 @@ Wardrobe: 00:06
 Mini-fridge: 00:04
 Rug: 00:00
 Window: 00:01
+Drawer: 00:06

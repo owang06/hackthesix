@@ -11,7 +11,7 @@ def process_video(video_path):
     load_dotenv(dotenv_path=".env.local")
     API_KEY = os.getenv("TLAPI_KEY")
 
-    client = TwelveLabs(api_key="tlk_1HBRP1S1J9CKQ524HVRED3ZP343A")
+    client = TwelveLabs(api_key=API_KEY)
     import uuid
     INDEX_NAME = str(uuid.uuid4())
 

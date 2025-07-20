@@ -6,10 +6,16 @@ import threading
 import time
 from twelve_labs import process_video
 from extract_frames import parse_objects_by_timestamp, extract_frames_from_objects
+import subprocess
+import sys
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv(dotenv_path=".env.local")
 
 app = Flask(__name__)
 CORS(app)
-UPLOAD_FOLDER = 'hackthesix/tempvideos'
+UPLOAD_FOLDER = '../tempvideos'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Global status tracking
@@ -129,6 +135,75 @@ def extract_frames_route():
         return jsonify({'message': f'Frames extracted to {output_folder}'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/feng-shuify', methods=['POST'])
+def feng_shuify():
+    try:
+        data = request.get_json() or {}
+        video_id = data.get('video_id')
+        
+        if not video_id:
+            return jsonify({'error': 'No video_id provided'}), 400
+        
+        # Find the video file for this video_id
+        # For now, we'll use the first video file in the tempvideos folder
+        # In a real app, you'd store the mapping between video_id and file path
+        video_files = [f for f in os.listdir(UPLOAD_FOLDER) if f.endswith('.mp4')]
+        if not video_files:
+            return jsonify({'error': 'No video files found'}), 404
+        
+        video_path = os.path.join(UPLOAD_FOLDER, video_files[0])
+        timestamps_file = "furniture_cleaned.txt"
+        output_folder = "pictures"
+        
+        # Extract frames using the existing functionality
+        ts_to_objects = parse_objects_by_timestamp(timestamps_file)
+        extract_frames_from_objects(video_path, ts_to_objects, output_folder)
+        
+        # Run gemini.py to analyze the extracted frames
+        try:
+            print("Running gemini.py to analyze extracted frames...")
+            # Get the current directory (backend/) and run gemini.py from there
+            backend_dir = os.path.dirname(os.path.abspath(__file__))
+            gemini_path = os.path.join(backend_dir, 'gemini.py')
+            
+            print(f"Gemini path: {gemini_path}")
+            print(f"Working directory: {backend_dir}")
+            
+            # Run gemini.py from the project root where .env.local is located
+            project_root = os.path.dirname(backend_dir)  # hackthesix/
+            
+            result = subprocess.run([sys.executable, gemini_path], 
+                                  capture_output=True, text=True, cwd=project_root)
+            
+            print(f"Gemini return code: {result.returncode}")
+            print(f"Gemini stdout: {result.stdout}")
+            print(f"Gemini stderr: {result.stderr}")
+            
+            if result.returncode == 0 and result.stdout.strip():
+                print("Gemini analysis completed successfully")
+                gemini_output = result.stdout
+            else:
+                print(f"Gemini analysis failed or produced no output")
+                print(f"Return code: {result.returncode}")
+                print(f"Stdout: {result.stdout}")
+                print(f"Stderr: {result.stderr}")
+                gemini_output = f"Gemini analysis failed - Return code: {result.returncode}, Output: {result.stdout}, Error: {result.stderr}"
+                
+        except Exception as e:
+            print(f"Error running gemini.py: {e}")
+            gemini_output = f"Error running gemini: {str(e)}"
+        
+        return jsonify({
+            'message': 'Feng-shuification completed successfully!',
+            'frames_extracted': len(ts_to_objects),
+            'output_folder': output_folder,
+            'gemini_analysis': 'completed'
+        })
+        
+    except Exception as e:
+        print(f"Feng-shuify error: {e}")
+        return jsonify({'error': f'Feng-shuification failed: {str(e)}'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

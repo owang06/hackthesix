@@ -1,10 +1,18 @@
 import os
 import PIL.Image
 import google.generativeai as genai
+from dotenv import load_dotenv
 
-genai.configure(api_key="AIzaSyBOQGU05bU_oyuiaHmC1VBgvfFH921M0f8")
+load_dotenv(dotenv_path=".env.local")
+API_KEY = os.getenv("GAPI_KEY")
 
-PICTURES_FOLDER = "pictures"
+genai.configure(api_key=API_KEY)
+
+# Determine the correct pictures folder path based on where the script is run from
+import os
+script_dir = os.path.dirname(os.path.abspath(__file__))  # backend/
+project_root = os.path.dirname(script_dir)  # hackthesix/
+PICTURES_FOLDER = os.path.join(project_root, "pictures")
 
 def extract_objects_from_filename(filename):
     # Assumes filename format: "2.00s - Object1 Object2 Object3.jpg"
@@ -34,7 +42,17 @@ def generate_prompt(objects):
     return prompt
 
 def process_images():
-    for filename in os.listdir(PICTURES_FOLDER):
+    print(f"Looking for images in: {PICTURES_FOLDER}")
+    print(f"Directory exists: {os.path.exists(PICTURES_FOLDER)}")
+    
+    if not os.path.exists(PICTURES_FOLDER):
+        print(f"Error: Pictures folder not found at {PICTURES_FOLDER}")
+        return
+    
+    files = os.listdir(PICTURES_FOLDER)
+    print(f"Found {len(files)} files in pictures folder")
+    
+    for filename in files:
         if not filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             continue
 

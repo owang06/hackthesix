@@ -40,7 +40,7 @@ def parse_objects_by_timestamp(timestamps_file):
             if match:
                 obj_name = match.group(1).strip()
                 minutes, seconds = map(int, match.group(2).split(":"))
-                ts_sec = minutes * 60 + seconds  # or `1 + minutes * 60 + seconds` if you want the offset
+                ts_sec = minutes * 60 + seconds + 0.75 # or `1 + minutes * 60 + seconds` if you want the offset
                 ts_to_objects[ts_sec].append(obj_name)
             else:
                 print(f"Warning: line didn't match expected format: {line}")

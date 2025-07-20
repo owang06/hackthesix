@@ -56,6 +56,7 @@ function createAndTriggerFileInput() {
   tempFileInput.click();
 }
 let progressInterval = null; // For managing staged progress updates
+let stagedProgressActive = false; // Flag to track if staged progress is running
 
 // Event listeners
 uploadBtn.addEventListener('click', (e) => {
@@ -138,9 +139,52 @@ changeVideoBtn.addEventListener('click', () => {
   resetUploadState();
 });
 
-// New upload button
-newUploadBtn.addEventListener('click', () => {
-  resetUploadState();
+// Feng-shuify button
+newUploadBtn.addEventListener('click', async () => {
+  console.log('Feng-shuify button clicked');
+  
+  // Disable button and show loading state
+  newUploadBtn.disabled = true;
+  newUploadBtn.textContent = 'Feng-shuifying...';
+  updateStatus('Extracting frames and analyzing with Gemini...', 'success');
+  
+  try {
+    // Call extract_frames.py
+    const response = await fetch('http://127.0.0.1:5000/feng-shuify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        video_id: localStorage.getItem('videoId')
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      updateStatus('Feng-shuification completed! Frames extracted and analyzed with Gemini.', 'success');
+      newUploadBtn.textContent = 'Feng-shuify Complete';
+      newUploadBtn.style.background = '#28a745';
+    } else {
+      updateStatus('Feng-shuification failed: ' + (result.error || response.statusText), 'error');
+      newUploadBtn.textContent = 'Feng-shuify Failed';
+      newUploadBtn.style.background = '#dc3545';
+      console.log('Feng-shuify error details:', result);
+    }
+  } catch (error) {
+    console.error('Feng-shuify error:', error);
+    updateStatus('Feng-shuification error: ' + error.message, 'error');
+    newUploadBtn.textContent = 'Feng-shuify Failed';
+    newUploadBtn.style.background = '#dc3545';
+  }
+  
+  // Re-enable button after a delay
+  setTimeout(() => {
+    newUploadBtn.disabled = false;
+    newUploadBtn.textContent = 'Feng-shuify';
+    newUploadBtn.style.background = '';
+  }, 3000);
 });
 
 // Reset upload state function
@@ -367,12 +411,10 @@ async function pollProcessingStatus(videoId) {
       if (response.ok) {
         console.log('Status update:', status);
         
-        // Update status message
-        updateStatus(status.message, status.status === 'error' ? 'error' : 'success');
-        
-        // Update progress if available
-        if (status.progress !== undefined) {
-          uploadVideoBtn.textContent = `Processing... ${status.progress}%`;
+        // Don't update status or progress from backend when using staged progress
+        // The staged progress will handle all progress updates and status messages
+        if (!stagedProgressActive) {
+          updateStatus(status.message, status.status === 'error' ? 'error' : 'success');
         }
         
         if (status.status === 'completed') {
@@ -380,14 +422,18 @@ async function pollProcessingStatus(videoId) {
           uploadCompleted = true;
           localStorage.setItem('uploadCompleted', 'true');
           
-          // Complete the progress bar
-          updateProgress(100);
+          // Complete the progress bar if staged progress is active
+          if (stagedProgressActive) {
+            console.log('Completing staged progress to 100%');
+            updateProgress(100);
+            uploadVideoBtn.textContent = 'Processing Complete';
+            updateButtonColor(100);
+            updateStatus('Processing completed successfully!', 'success');
+            stagedProgressActive = false; // Stop staged progress
+          }
           
-          uploadVideoBtn.textContent = 'Processing Complete';
           uploadVideoBtn.style.background = '#28a745'; // Green color for success
           newUploadBtn.style.display = 'inline-block'; // Show new upload button
-          
-          updateStatus('Processing completed successfully!', 'success');
           
           // Show results if available
           if (status.results) {
@@ -471,6 +517,7 @@ function showProgressBar() {
 // Hide progress bar
 function hideProgressBar() {
   progressContainer.style.display = 'none';
+  stagedProgressActive = false;
   if (progressInterval) {
     clearInterval(progressInterval);
     progressInterval = null;
@@ -483,9 +530,36 @@ function updateProgress(percentage) {
   progressText.textContent = percentage + '%';
 }
 
+// Update button color based on progress percentage
+function updateButtonColor(percentage) {
+  if (percentage <= 20) {
+    // Blue (0-20%)
+    uploadVideoBtn.style.background = '#0071e3';
+  } else if (percentage <= 40) {
+    // Light blue to purple (20-40%)
+    uploadVideoBtn.style.background = '#5856d6';
+  } else if (percentage <= 60) {
+    // Purple to orange (40-60%)
+    uploadVideoBtn.style.background = '#ff9500';
+  } else if (percentage <= 80) {
+    // Orange to yellow (60-80%)
+    uploadVideoBtn.style.background = '#ffcc00';
+  } else if (percentage <= 95) {
+    // Yellow to light green (80-95%)
+    uploadVideoBtn.style.background = '#34c759';
+  } else if (percentage <= 99) {
+    // Light green to green (95-99%)
+    uploadVideoBtn.style.background = '#30d158';
+  } else {
+    // Final green (100%)
+    uploadVideoBtn.style.background = '#28a745';
+  }
+}
+
 // Start staged progress updates
 function startStagedProgress() {
   showProgressBar();
+  stagedProgressActive = true;
   
   // Clear any existing interval
   if (progressInterval) {
@@ -494,17 +568,61 @@ function startStagedProgress() {
   
   let currentStage = 0;
   const stages = [
-    { progress: 25, delay: 2000, message: 'Analyzing video frames...' },
-    { progress: 50, delay: 3000, message: 'Detecting furniture and objects...' },
-    { progress: 75, delay: 4000, message: 'Processing spatial relationships...' },
-    { progress: 99, delay: 6000, message: 'Almost done... (this might take a moment 😅)' }
+    { 
+      progress: () => Math.floor(Math.random() * 8) + 12, // 12-20%
+      delay: () => Math.floor(Math.random() * 1500) + 1000, // 1-2.5 seconds
+      message: 'Initializing video analysis...'
+    },
+    { 
+      progress: () => Math.floor(Math.random() * 10) + 20, // 20-30%
+      delay: () => Math.floor(Math.random() * 2000) + 1200, // 1.2-3.2 seconds
+      message: 'Extracting video frames...'
+    },
+    { 
+      progress: () => Math.floor(Math.random() * 12) + 30, // 30-42%
+      delay: () => Math.floor(Math.random() * 2500) + 1500, // 1.5-4 seconds
+      message: 'Analyzing frame content...'
+    },
+    { 
+      progress: () => Math.floor(Math.random() * 15) + 42, // 42-57%
+      delay: () => Math.floor(Math.random() * 3000) + 1800, // 1.8-4.8 seconds
+      message: 'Detecting furniture and objects...'
+    },
+    { 
+      progress: () => Math.floor(Math.random() * 18) + 57, // 57-75%
+      delay: () => Math.floor(Math.random() * 3500) + 2000, // 2-5.5 seconds
+      message: 'Processing spatial relationships...'
+    },
+    { 
+      progress: () => Math.floor(Math.random() * 12) + 75, // 75-87%
+      delay: () => Math.floor(Math.random() * 4000) + 2500, // 2.5-6.5 seconds
+      message: 'Calculating depth maps...'
+    },
+    { 
+      progress: () => Math.floor(Math.random() * 8) + 87, // 87-95%
+      delay: () => Math.floor(Math.random() * 5000) + 3000, // 3-8 seconds
+      message: 'Finalizing analysis...'
+    },
+    { 
+      progress: () => Math.floor(Math.random() * 4) + 95, // 95-99%
+      delay: () => Math.floor(Math.random() * 6000) + 4000, // 4-10 seconds
+      message: 'Almost done... (this might take a moment 😅)'
+    }
   ];
   
   const updateStage = () => {
-    if (currentStage < stages.length) {
+    if (currentStage < stages.length && stagedProgressActive && !uploadCompleted) {
       const stage = stages[currentStage];
-      updateProgress(stage.progress);
+      const progressValue = stage.progress();
+      updateProgress(progressValue);
       updateStatus(stage.message, 'success');
+      
+      // Update button text to match progress
+      uploadVideoBtn.textContent = `Processing... ${progressValue}%`;
+      
+      // Update button color based on progress
+      updateButtonColor(progressValue);
+      
       currentStage++;
     }
   };
@@ -512,24 +630,24 @@ function startStagedProgress() {
   // Start with first stage immediately
   updateStage();
   
-  // Schedule subsequent stages
+    // Schedule subsequent stages with random delays
   let totalDelay = 0;
   for (let i = 1; i < stages.length; i++) {
-    totalDelay += stages[i-1].delay;
+    totalDelay += stages[i-1].delay();
     setTimeout(() => {
       updateStage();
     }, totalDelay);
   }
   
-  // After all stages, keep it at 99% for a while before completing
-  const totalStagesDelay = stages.reduce((sum, stage) => sum + stage.delay, 0);
-  setTimeout(() => {
-    // Keep at 99% for a bit longer for the "stuck" effect
-    setTimeout(() => {
-      updateProgress(100);
-      updateStatus('Processing completed successfully!', 'success');
-    }, 2000); // Wait 2 more seconds at 99%
-  }, totalStagesDelay);
+  // After all stages, stay at 99% until backend reports completion
+  const totalStagesDelay = stages.reduce((sum, stage) => sum + stage.delay(), 0);
+   setTimeout(() => {
+     // Stay at 99% until backend reports actual completion
+     updateProgress(99);
+     updateStatus('Almost done... waiting for final processing...', 'success');
+     uploadVideoBtn.textContent = 'Processing... 99%';
+     updateButtonColor(99);
+   }, totalStagesDelay);
 }
 
 // Fade-in animation for hero section

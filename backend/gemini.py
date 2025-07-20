@@ -149,15 +149,15 @@ def estimate_room_size(objects):
     """
     # Common furniture types and their typical spacing from walls
     wall_spacing = {
-        'bed': 0.6,      # Bed typically 0.6m from walls
-        'desk': 0.8,     # Desk typically 0.8m from walls
-        'chair': 0.5,    # Chair needs space to pull out
-        'wardrobe': 0.3, # Wardrobe close to wall
-        'bookshelf': 0.2, # Bookshelf close to wall
-        'table': 0.8,    # Table needs space around it
-        'couch': 0.5,    # Couch spacing from walls
-        'mini-fridge': 0.2, # Mini-fridge close to wall
-        'drawer': 0.3,   # Drawer close to wall
+        'bed': 0.0,      # Bed typically 0.6m from walls
+        'desk': 0.0,     # Desk typically 0.8m from walls
+        'chair': 0.0,    # Chair needs space to pull out
+        'wardrobe': 0.0, # Wardrobe close to wall
+        'bookshelf': 0.0, # Bookshelf close to wall
+        'table': 0.0,    # Table needs space around it
+        'couch': 0.0,    # Couch spacing from walls
+        'mini-fridge': 0.0, # Mini-fridge close to wall
+        'drawer': 0.0,   # Drawer close to wall
     }
     
     # Calculate total object dimensions
@@ -187,8 +187,8 @@ def estimate_room_size(objects):
     # Assume furniture is arranged along walls with some spacing
     if total_length > 0 and total_width > 0:
         # Add spacing for furniture arrangement
-        spacing_factor = 1.5  # Account for gaps between furniture
-        wall_spacing_total = 0.6 * 2  # Typical spacing from opposite walls
+        spacing_factor = 1.0  # Account for gaps between furniture
+        wall_spacing_total = 0.5 * 2  # Typical spacing from opposite walls
         
         estimated_length = max(total_length * spacing_factor + wall_spacing_total, max_length * 2.5)
         estimated_width = max(total_width * spacing_factor + wall_spacing_total, max_width * 2.5)
@@ -204,8 +204,8 @@ def estimate_room_size(objects):
     else:
         # Fallback if no valid measurements
         return {
-            'length': 4.0,  # Default room size
-            'width': 3.0
+            'length': 5.5,  # Default room size
+            'width': 4.0
         }
 
 

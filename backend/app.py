@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import uuid
@@ -204,6 +204,11 @@ def feng_shuify():
     except Exception as e:
         print(f"Feng-shuify error: {e}")
         return jsonify({'error': f'Feng-shuification failed: {str(e)}'}), 500
+
+@app.route("/models/<filename>")
+def serve_model(filename):
+    model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "models"))
+    return send_from_directory(model_path, filename)
 
 if __name__ == "__main__":
     app.run(debug=True)

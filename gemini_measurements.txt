@@ -1,0 +1,68 @@
+# 2.75s - Bed:.jpg
+{
+  "object": "Bed",
+  "length": 2.0,
+  "width": 1.0,
+  "height": 0.8
+}
+
+# 6.75s - Desk: Chair:.jpg
+{
+    "object": "Desk",
+    "length": 1.2,
+    "width": 0.6,
+    "height": 0.75
+  }
+{
+    "object": "Chair",
+    "length": 0.5,
+    "width": 0.5,
+    "height": 0.8
+  }
+
+# 3.75s - Window:.jpg
+{
+  'object': 'Window',
+  'length': 2.0,
+  'width': 1.5,
+  'height': 1.8
+}
+
+# 10.75s - Rug: Door:.jpg
+{
+    "object": "Rug",
+    "length": 0.7,
+    "width": 0.7,
+    "height": 0
+  }
+{
+    "object": "Door",
+    "length": 0,
+    "width": 0.8,
+    "height": 2.0
+  }
+
+# 8.75s - Wardrobe:.jpg
+{
+  'object': 'Wardrobe',
+  'length': 0.6,
+  'width': 1.2,
+  'height': 2.1
+}
+
+# 7.75s - Mini-fridge: Drawer:.jpg
+{
+  "object": "Mini-fridge",
+  "length": 0.5,
+  "width": 0.5,
+  "height": 0.8
+}
+{
+  "object": "Drawer",
+  "length": 0.6,
+  "width": 0.4,
+  "height": 0.1
+}
+
+# Room Size Estimation
+{'length': 13.3, 'width': 10.8}

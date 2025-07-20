@@ -176,7 +176,7 @@ for key, value in layout.items():
     )
 
 #Target export path: ../blender_model/room.glb
-output_path = os.path.abspath(os.path.join(BASE_DIR, "..", "blender_model", "room.glb"))
+output_path = os.path.abspath(os.path.join(BASE_DIR, "..", "room.glb"))
 
 #Export the current scene as GLB
 bpy.ops.export_scene.gltf(

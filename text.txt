@@ -1,0 +1,14 @@
+Analyze and validate the given room layout with furniture dimensions and positions. If any furniture overlaps or is outside the room dimensions, adjust the coordinates accordingly. Try to adhere to Feng Shui principles where possible.
+you have to output coordinates for each piece of furniture in the room following the example JSON format below, using their appropriate names and dimensions:
+{{
+  "room": {{"l": 5.0, "w": 4.5, "x": 0, "y": 0}},
+  "furniture1": {{"l": 0.1, "w": 2, "x": 0, "y": 0, "rotation": 0}},
+  "furniture2": {{"l": 1.6, "w": 2.0, "x": 3.4, "y": 1.25, "rotation": 0}},
+}}
+Note that coordinates refer to the center of the object, which can be calculated using length and width. Also, rotation is in degrees.
+Only change the coordinates and rotation of the furniture, do not change the dimensions.
+
+Room layout and furniture data (in JSON):
+{json.dumps(input_json)}
+
+Output only the json, nothing else. 

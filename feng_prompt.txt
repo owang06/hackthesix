@@ -1,0 +1,81 @@
+You are a Feng Shui expert. Given a room layout with furniture details, provide advice for rearranging each piece of furniture to improve the flow of Qi and comply with Feng Shui principles. You can provide coordinates if you want. 
+
+For this case, a piece of furniture is defined as one of the following:
+bed
+nightstand
+wardrobe
+desk 
+chair 
+door 
+couch 
+table 
+bookshelf
+mini-fridge
+window
+
+If you encounter anything else:
+- If it is a synonym or alternative name for one of the above, treat it as that piece of furniture.
+- If it is not a piece of furniture, ignore it
+
+Room and furniture data (in JSON):
+{json.dumps(layout_json, indent=2)}
+
+Ensure the response makes sense logically and there is no overlapping furniture, and that all furniture is within the room dimensions. Output a natural language text."""
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+I am planning to design a room layout and would like to incorporate Feng Shui principles. Account for the fact that the coordinate system would calulcate based on the center of the room being at (0,0) and all other coordinates are based off of the center of the object
+
+
+
+Here is the Room Dimension: 14ft (front wall) × 10ft (side walls) × 8ft (height).
+
+
+Room and furniture data (in JSON):
+{json.dumps(layout_json, indent=2)}
+
+the front wall(10ft) has a door on its right side and the back wall(10ft) has a window in the center.
+
+The left and right walls (both 14 ft walls) are plain, with no other openings.
+
+Based on these details, please provide a detailed room layout suggestion that adheres to Feng Shui principles. Specifically, consider:
+
+
+
+Commanding Position: How can the main furniture piece (e.g., bed, desk, sofa) be placed in a commanding position, allowing a clear view of the door without being directly in line with it?
+
+Energy Flow (Chi): How can furniture be arranged to promote smooth and unobstructed energy flow throughout the room? Avoid clutter and sharp angles pointing at main living areas.
+
+Balance and Harmony: How can the layout create a sense of balance and visual harmony, considering the size and shape of objects?
+
+
+
+Please provide a descriptive explanation of the proposed layout with coordinates in feet relative to the bed placement, which should be placed first. For example, place the bed first against a wall and position other furniture relative to it. make sure they don't overlap in coordinates
+
+
+For this case, a piece of furniture is defined as one of the following:
+bed
+nightstand
+wardrobe
+desk 
+chair 
+door 
+couch 
+table 
+bookshelf
+mini-fridge
+window
+
+If you encounter anything else:
+- If it is a synonym or alternative name for one of the above, treat it as that piece of furniture.
+- If it is not a piece of furniture, ignore it
+
+
+
+Maintain at least 2 feet of walking space around objects where required (e.g., in front of wardrobe doors for opening).
+
+Visual aids are not required, but the description should be clear and easy to visualize as a top-down layout with coordinate positions.
+
+make it simple and easy to follow

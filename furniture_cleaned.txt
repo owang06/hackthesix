@@ -1,0 +1,9 @@
+Bed: 00:02
+Desk: 00:06
+Chair: 00:06
+Wardrobe: 00:08
+Mini-fridge: 00:07
+Rug: 00:10
+Window: 00:03
+Drawer: 00:07
+Door: 00:10

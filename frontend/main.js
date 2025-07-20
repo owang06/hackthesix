@@ -179,12 +179,14 @@ newUploadBtn.addEventListener('click', async () => {
     newUploadBtn.style.background = '#dc3545';
   }
   
-  // Re-enable button after a delay
-  setTimeout(() => {
-    newUploadBtn.disabled = false;
-    newUploadBtn.textContent = 'Feng-shuify';
-    newUploadBtn.style.background = '';
-  }, 3000);
+  // Only re-enable button if there was an error
+  if (!response.ok) {
+    setTimeout(() => {
+      newUploadBtn.disabled = false;
+      newUploadBtn.textContent = 'Feng-shuify';
+      newUploadBtn.style.background = '';
+    }, 3000);
+  }
 });
 
 // Reset upload state function
@@ -422,15 +424,13 @@ async function pollProcessingStatus(videoId) {
           uploadCompleted = true;
           localStorage.setItem('uploadCompleted', 'true');
           
-          // Complete the progress bar if staged progress is active
-          if (stagedProgressActive) {
-            console.log('Completing staged progress to 100%');
-            updateProgress(100);
-            uploadVideoBtn.textContent = 'Processing Complete';
-            updateButtonColor(100);
-            updateStatus('Processing completed successfully!', 'success');
-            stagedProgressActive = false; // Stop staged progress
-          }
+          // Force completion regardless of staged progress state
+          console.log('Backend reports completion - forcing 100%');
+          stagedProgressActive = false; // Stop staged progress immediately
+          updateProgress(100);
+          uploadVideoBtn.textContent = 'Processing Complete';
+          updateButtonColor(100);
+          updateStatus('Processing completed successfully!', 'success');
           
           uploadVideoBtn.style.background = '#28a745'; // Green color for success
           newUploadBtn.style.display = 'inline-block'; // Show new upload button
@@ -624,6 +624,14 @@ function startStagedProgress() {
       updateButtonColor(progressValue);
       
       currentStage++;
+    } else if (uploadCompleted && stagedProgressActive) {
+      // If upload is completed but staged progress is still active, force completion
+      console.log('Upload completed, forcing staged progress to 100%');
+      stagedProgressActive = false;
+      updateProgress(100);
+      uploadVideoBtn.textContent = 'Processing Complete';
+      updateButtonColor(100);
+      updateStatus('Processing completed successfully!', 'success');
     }
   };
   
@@ -642,11 +650,13 @@ function startStagedProgress() {
   // After all stages, stay at 99% until backend reports completion
   const totalStagesDelay = stages.reduce((sum, stage) => sum + stage.delay(), 0);
    setTimeout(() => {
-     // Stay at 99% until backend reports actual completion
-     updateProgress(99);
-     updateStatus('Almost done... waiting for final processing...', 'success');
-     uploadVideoBtn.textContent = 'Processing... 99%';
-     updateButtonColor(99);
+     // Only stay at 99% if not already completed
+     if (!uploadCompleted && stagedProgressActive) {
+       updateProgress(99);
+       updateStatus('Almost done... waiting for final processing...', 'success');
+       uploadVideoBtn.textContent = 'Processing... 99%';
+       updateButtonColor(99);
+     }
    }, totalStagesDelay);
 }
 

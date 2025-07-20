@@ -21,13 +21,20 @@
   </style>
 </head>
 <body>
+<<<<<<< HEAD
   <nav class="navbar">
     <div class="nav-logo"></div>
     <ul class="nav-links"></ul>
   </nav>
 
+=======
+>>>>>>> 462d198e5a4a07a230a3470d5bbefe981230f8d2
   <section class="hero">
-    <h1 class="hero-title">Video Analysis</h1>
+    <div class="hero-logo">
+      <button class="logo-button" onclick="resetToHome()">
+        <img src="foorprinttt.png" alt="Logo" class="logo-image">
+      </button>
+    </div>
     <p class="hero-subtitle">Upload your video to analyze furniture and objects</p>
 
     <div class="upload-container">
@@ -36,7 +43,11 @@
           <div class="upload-icon">📹</div>
           <h3>Upload Your Video</h3>
           <p>Drag and drop or click to select a video file</p>
+<<<<<<< HEAD
           <input type="file" id="videoInput" accept="video/*" hidden />
+=======
+          <input type="file" id="videoInput" accept="video/*" style="display: none;">
+>>>>>>> 462d198e5a4a07a230a3470d5bbefe981230f8d2
           <button type="button" id="uploadBtn" class="upload-btn">Choose Video</button>
         </div>
       </div>
@@ -47,6 +58,14 @@
           <button id="uploadVideoBtn" class="cta-btn">Upload & Analyze</button>
           <button id="changeVideoBtn" class="secondary-btn">Choose Different Video</button>
           <button id="newUploadBtn" class="secondary-btn" style="display: none;">Upload Another Video</button>
+        </div>
+        
+        <!-- Progress bar container -->
+        <div id="progressContainer" class="progress-container" style="display: none;">
+          <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+          <div id="progressText" class="progress-text">0%</div>
         </div>
       </div>
     </div>

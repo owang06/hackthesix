@@ -80,9 +80,9 @@ def extract_frames_from_objects(video_path, ts_to_objects, output_folder="pictur
     cap.release()
 
 if __name__ == "__main__":
-    video_folder = "../tempvideos"
+    video_folder = "tempvideos"
     video_file = get_first_video_file(video_folder)         # Replace with your video path
-    timestamps_file = "../furniture_cleaned.txt"         # Your furniture objects and timestamps file
+    timestamps_file = "furniture_cleaned.txt"         # Your furniture objects and timestamps file
 
     ts_to_objects = parse_objects_by_timestamp(timestamps_file)
     extract_frames_from_objects(video_file, ts_to_objects, "../pictures")

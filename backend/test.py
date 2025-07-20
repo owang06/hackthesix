@@ -9,7 +9,8 @@ client = TwelveLabs(api_key="tlk_3N7TRXK1EHGJDB29REMD02K96XTJ")
 # )
 # print(f"Created index: id={index.id} name={index.name}")
 
-# index = client.index.retrieve(name="my-bedroom-index")
+# index = client.index.retrieve(name="my-b/Users/jasmeharkaur/Downloads/wardrobe_gltfedroom-index")
+
 
 
 

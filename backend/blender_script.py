@@ -20,7 +20,7 @@ with open(INPUT_JSON, "r") as f:
 # === Rotation and Axis Mapping Configs ===
 furniture_rotations = {
     "bed": (math.radians(-90), 0, 0),
-    "chair": (math.radians(-90), 0, 0),
+    "chair": (0, 0, 0),
     "desk": (math.radians(-90), 0, 0),
     "nightstand": (math.radians(-90), 0, 0),
     "couch": (math.radians(-90), 0, 0),
@@ -43,6 +43,38 @@ furniture_coordinate_mapping = {
     "bookshelf": {"x": "x", "y": "y", "z": "z"},
     "window": {"x": "x", "y": "y", "z": "z"}
 }
+
+layout2 = {
+  "room": {
+    "l": 3.8,
+    "w": 4.5,
+    "x": 0,
+    "y": 0
+  },
+  "bed": {
+    "l": 0.6,
+    "w": 0.6,
+    "x": -1.0,
+    "y": 1.95,
+    "rotation": 90
+  },
+  "nightstand": {
+    "l": 0.6,
+    "w": 0.6,
+    "x": -1.6,
+    "y": 1.95,
+    "rotation": 0
+  },
+  "chair": {
+    "l": 0.6,
+    "w": 0.6,
+    "x": 1.45,
+    "y": -1.8,
+    "rotation": 135
+  }
+}
+
+
 
 room_size = layout.get("room", {})
 room_length = room_size.get("l", 10)
@@ -101,7 +133,10 @@ def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
     # )
 
     # bpy.ops.object.empty_add(type='PLAIN_AXES', location=remapped_location)
-    bpy.ops.object.empty_add(type='PLAIN_AXES', location=(x, y, 0))
+    if name == "bed":
+        bpy.ops.object.empty_add(type='PLAIN_AXES', location=(x, y - 0.5, 0))
+    else:
+        bpy.ops.object.empty_add(type='PLAIN_AXES', location=(x, y, 0))
     group = bpy.context.active_object
     group.name = f"{name}_group"
     group.rotation_euler = furniture_rotations.get(name, (0, 0, 0))
@@ -109,7 +144,9 @@ def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
     for obj in new_objects:
         obj.select_set(True)
         obj.parent = group
-        obj.location -= group.location
+        # obj.location -= group.location
+        obj.location = (0,0,0)
+        print (name + ": " + group.location.__str__())
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
 
         # ⚠ Here we assume target_w → X, target_l → Y
@@ -122,7 +159,7 @@ def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
 
         
 # === Place all furniture ===
-for key, value in layout.items():
+for key, value in layout2.items():
     if key == "room":
         continue
 
@@ -135,3 +172,8 @@ for key, value in layout.items():
         target_w=value.get("w", 2),
         target_l=value.get("l", 2)
     )
+
+
+
+
+

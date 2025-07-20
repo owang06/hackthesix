@@ -9,14 +9,63 @@ const changeVideoBtn = document.getElementById('changeVideoBtn');
 const newUploadBtn = document.getElementById('newUploadBtn');
 const uploadStatus = document.getElementById('uploadStatus');
 
+// Debug: Check if elements are found
+// DOM elements found successfully
+
 // Store the selected file globally
 let selectedFile = null;
 let videoPreviewURL = null; // Store the video preview URL globally
 let videoDataURL = null; // Store video as data URL for persistence
+let uploadInProgress = false;
+let uploadCompleted = false;
+let tempFileInput = null; // Store the temporary file input
+
+// Function to create and trigger file input
+function createAndTriggerFileInput() {
+  // Remove any existing temp file input
+  if (tempFileInput && document.body.contains(tempFileInput)) {
+    document.body.removeChild(tempFileInput);
+  }
+  
+  // Create new file input
+  tempFileInput = document.createElement('input');
+  tempFileInput.type = 'file';
+  tempFileInput.accept = 'video/*';
+  tempFileInput.style.display = 'none';
+  
+  tempFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleVideoSelection(file);
+    }
+    
+    // Reset the temp file input for next use
+    tempFileInput.value = '';
+  });
+  
+  // Handle when user cancels the file picker
+  tempFileInput.addEventListener('cancel', () => {
+    // Reset for next use
+    tempFileInput.value = '';
+  });
+  
+  document.body.appendChild(tempFileInput);
+  tempFileInput.click();
+}
 
 // Event listeners
-uploadBtn.addEventListener('click', () => videoInput.click());
-uploadArea.addEventListener('click', () => videoInput.click());
+uploadBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  createAndTriggerFileInput();
+});
+uploadArea.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  videoInput.click();
+});
+
+
 
 // Drag and drop functionality
 uploadArea.addEventListener('dragover', (e) => {
@@ -31,6 +80,7 @@ uploadArea.addEventListener('dragleave', () => {
 uploadArea.addEventListener('drop', (e) => {
   e.preventDefault();
   uploadArea.classList.remove('dragover');
+  
   const files = e.dataTransfer.files;
   if (files.length > 0 && files[0].type.startsWith('video/')) {
     handleVideoSelection(files[0]);
@@ -44,6 +94,8 @@ videoInput.addEventListener('change', (e) => {
     handleVideoSelection(file);
   }
 });
+
+
 
 // Handle video selection
 function handleVideoSelection(file) {
@@ -70,14 +122,11 @@ function handleVideoSelection(file) {
     localStorage.setItem('videoDataURL', videoDataURL);
     localStorage.setItem('videoFileName', file.name);
     localStorage.setItem('uploadCompleted', 'false');
-    console.log('Video data URL created and stored in localStorage');
   };
   reader.readAsDataURL(file);
   
   // Update status
   updateStatus('Video selected: ' + file.name, 'success');
-  
-  console.log('Video preview set:', videoURL);
 }
 
 // Change video button
@@ -103,11 +152,16 @@ function resetUploadState() {
   uploadInProgress = false;
   uploadCompleted = false;
   
+  // Reset button state
+  uploadVideoBtn.disabled = false;
+  uploadVideoBtn.style.cursor = 'pointer';
+  
   // Clear localStorage
   localStorage.removeItem('videoDataURL');
   localStorage.removeItem('videoFileName');
   localStorage.removeItem('uploadCompleted');
   localStorage.removeItem('videoId');
+  localStorage.removeItem('uploadStartTime');
   
   // Show upload area and hide preview
   uploadArea.style.display = 'block';
@@ -124,9 +178,35 @@ function resetUploadState() {
 }
 
 // Upload video button
-uploadVideoBtn.addEventListener('click', async () => {
+console.log('Setting up upload button event listener');
+if (uploadVideoBtn) {
+  console.log('Upload button found, adding event listener');
+  console.log('Button disabled:', uploadVideoBtn.disabled);
+  console.log('Button style:', uploadVideoBtn.style.cssText);
+  console.log('Button parent display:', videoPreview.style.display);
+  console.log('Button offsetParent:', uploadVideoBtn.offsetParent);
+  
+    uploadVideoBtn.addEventListener('click', async function(e) {
+    // Prevent double clicks
+    e.preventDefault();
+    e.stopPropagation();
+  
+  // Check if upload is already in progress
+  if (uploadInProgress) {
+    console.log('Upload already in progress, ignoring click');
+    return;
+  }
+  
+  // Check if file is selected
+  if (!selectedFile) {
+    console.log('No file selected');
+    updateStatus('No video selected', 'error');
+    return;
+  }
+  
   console.log('=== UPLOAD STARTED ===');
   uploadInProgress = true;
+  localStorage.setItem('uploadStartTime', Date.now().toString());
   
   if (!selectedFile) {
     updateStatus('No video selected', 'error');
@@ -137,6 +217,7 @@ uploadVideoBtn.addEventListener('click', async () => {
   // Additional validation
   if (!(selectedFile instanceof File)) {
     updateStatus('Invalid file object', 'error');
+    uploadInProgress = false;
     return;
   }
   
@@ -148,6 +229,7 @@ uploadVideoBtn.addEventListener('click', async () => {
   updateStatus('Uploading video...', '');
   uploadVideoBtn.disabled = true;
   uploadVideoBtn.textContent = 'Uploading...';
+  uploadVideoBtn.style.cursor = 'not-allowed';
   
   try {
     const formData = new FormData();
@@ -240,6 +322,7 @@ uploadVideoBtn.addEventListener('click', async () => {
       uploadVideoBtn.disabled = false;
       uploadVideoBtn.textContent = 'Upload & Analyze';
       uploadVideoBtn.style.background = '#0071e3'; // Reset to original color
+      uploadVideoBtn.style.cursor = 'pointer';
     }
   } catch (err) {
     console.log('=== UPLOAD ERROR ===');
@@ -249,8 +332,10 @@ uploadVideoBtn.addEventListener('click', async () => {
     uploadVideoBtn.disabled = false;
     uploadVideoBtn.textContent = 'Upload & Analyze';
     uploadVideoBtn.style.background = '#0071e3'; // Reset to original color
+    uploadVideoBtn.style.cursor = 'pointer';
   }
-});
+  });
+}
 
 // Poll processing status
 async function pollProcessingStatus(videoId) {
@@ -331,6 +416,29 @@ function updateStatus(message, type = '') {
   }
 }
 
+// Removed auto-reset to avoid conflicts
+
+// Test function to check button
+window.testButton = function() {
+  console.log('Testing button click...');
+  if (uploadVideoBtn) {
+    console.log('Button exists, trying to click programmatically');
+    console.log('Button visible:', uploadVideoBtn.offsetParent !== null);
+    console.log('Button parent visible:', videoPreview.style.display);
+    uploadVideoBtn.click();
+  } else {
+    console.log('Button not found');
+  }
+};
+
+// Test function to show the video preview
+window.showPreview = function() {
+  console.log('Showing video preview...');
+  uploadArea.style.display = 'none';
+  videoPreview.style.display = 'block';
+  console.log('Video preview display:', videoPreview.style.display);
+};
+
 // Fade-in animation for hero section
 window.addEventListener('DOMContentLoaded', () => {
   console.log('=== PAGE LOADED ===');
@@ -369,22 +477,14 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  // Clear localStorage when page is unloaded/closed
+  // Clear localStorage when page is unloaded/closed (simplified to avoid violations)
   window.addEventListener('beforeunload', (e) => {
-    console.log('=== CLEARING LOCALSTORAGE ON EXIT ===');
+    // Don't prevent unload, just clear storage
     localStorage.removeItem('videoDataURL');
     localStorage.removeItem('videoFileName');
     localStorage.removeItem('uploadCompleted');
     localStorage.removeItem('videoId');
-  });
-  
-  // Also clear on page unload
-  window.addEventListener('unload', (e) => {
-    console.log('=== UNLOAD EVENT - CLEARING STORAGE ===');
-    localStorage.removeItem('videoDataURL');
-    localStorage.removeItem('videoFileName');
-    localStorage.removeItem('uploadCompleted');
-    localStorage.removeItem('videoId');
+    localStorage.removeItem('uploadStartTime');
   });
   
   // Handle page visibility changes
@@ -420,8 +520,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // Prevent page unload during and after upload
-let uploadInProgress = false;
-let uploadCompleted = false;
+// Variables already declared at the top
 
 // Remove the duplicate beforeunload listener since we moved it to DOMContentLoaded
 

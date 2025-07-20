@@ -4,6 +4,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 from feng_shui_llm import get_fengshui_recommendations
 from coordinates_validation_llm import get_coordinates_validation
+import subprocess
 
 load_dotenv(dotenv_path=".env.local")
 API_KEY = os.getenv("GAPI_KEY")
@@ -138,6 +139,19 @@ def process_images():
             with open("validated_layout.json", "w") as f:
                 json.dump(validation_result, f, indent=2)
             print("Saved validation result to layout.json")
+
+            # --- Run Blender Script ---
+            blender_path = "/Applications/Blender.app/Contents/MacOS/Blender"  # Update if needed
+            blender_script = os.path.join(os.path.dirname(__file__), "blender_script.py")
+            try:
+                subprocess.run([
+                    blender_path,
+                    "--background",
+                    "--python", blender_script
+                ], check=True)
+                print("Blender script ran successfully.")
+            except Exception as e:
+                print("Failed to run Blender script:", e)
         else:
             print("Feng Shui result is empty. Skipping coordinate validation.")
 
@@ -187,8 +201,8 @@ def estimate_room_size(objects):
     # Assume furniture is arranged along walls with some spacing
     if total_length > 0 and total_width > 0:
         # Add spacing for furniture arrangement
-        spacing_factor = 1.0  # Account for gaps between furniture
-        wall_spacing_total = 0.5 * 2  # Typical spacing from opposite walls
+        spacing_factor = 0.5  # Account for gaps between furniture
+        wall_spacing_total = 0.3 * 2  # Typical spacing from opposite walls
         
         estimated_length = max(total_length * spacing_factor + wall_spacing_total, max_length * 2.5)
         estimated_width = max(total_width * spacing_factor + wall_spacing_total, max_width * 2.5)

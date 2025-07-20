@@ -1,43 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Apple-Inspired Landing</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    #threejs-container {
+      width: 100%;
+      height: 600px;
+      background: #111;
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-logo"></div>
-    <ul class="nav-links">
-    </ul>
+    <ul class="nav-links"></ul>
   </nav>
-  
+
   <section class="hero">
     <h1 class="hero-title">Video Analysis</h1>
     <p class="hero-subtitle">Upload your video to analyze furniture and objects</p>
-    
+
     <div class="upload-container">
       <div class="upload-area" id="uploadArea">
         <div class="upload-content">
           <div class="upload-icon">📹</div>
           <h3>Upload Your Video</h3>
           <p>Drag and drop or click to select a video file</p>
-          <input type="file" id="videoInput" accept="video/*" hidden>
+          <input type="file" id="videoInput" accept="video/*" hidden />
           <button type="button" id="uploadBtn" class="upload-btn">Choose Video</button>
         </div>
       </div>
-      
+
       <div class="video-preview" id="videoPreview" style="display: none;">
-        <video id="previewVideo" controls>
-          Your browser does not support the video tag.
-        </video>
+        <video id="previewVideo" controls>Your browser does not support the video tag.</video>
         <div class="preview-actions">
           <button id="uploadVideoBtn" class="cta-btn">Upload & Analyze</button>
           <button id="changeVideoBtn" class="secondary-btn">Choose Different Video</button>
@@ -45,11 +50,97 @@
         </div>
       </div>
     </div>
-    
+
     <div id="uploadStatus" class="upload-status"></div>
   </section>
-  
-  <script src="main.js"></script>
+
+  <!-- 3D Viewer Section -->
+  <section class="viewer-section">
+    <div id="threejs-container"></div>
+  </section>
+
+  <!-- Load Three.js and render room.glb -->
+  <script type="module">
+  import * as THREE from 'https://cdn.skypack.dev/three';
+  import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'https://cdn.skypack.dev/three/examples/jsm/controls/OrbitControls.js';
+
+  const container = document.getElementById("threejs-container");
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x222222);
+
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
+
+  // Add test cube for debugging
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+  const cube = new THREE.Mesh(geometry, material);
+  cube.position.set(0, 0.5, 0);
+  scene.add(cube);
+
+  // Lights
+  const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(ambient);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.position.set(10, 10, 10);
+  scene.add(dirLight);
+
+  // Controls
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+
+  // Position camera for now to view test cube
+  camera.position.set(5, 5, 5);
+  camera.lookAt(0, 0, 0);
+  controls.update();
+
+  // Load your GLB model
+  const loader = new GLTFLoader();
+  loader.load('http://localhost:5000/models/room.glb', function (gltf) {
+    const model = gltf.scene;
+    scene.add(model);
+
+    const box = new THREE.Box3().setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+
+    console.log("📦 Bounding box center:", center);
+    console.log("📏 Size:", size);
+
+    // Move camera based on model size
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+    cameraZ *= 2.5;
+
+    camera.position.set(center.x, center.y + maxDim * 0.5, center.z + cameraZ);
+    camera.lookAt(center);
+    controls.target.copy(center);
+    controls.update();
+
+    console.log("✅ Model loaded.");
+  }, undefined, function (error) {
+    console.error("❌ Failed to load GLB:", error);
+  });
+
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+
+
 </body>
 </html>
-

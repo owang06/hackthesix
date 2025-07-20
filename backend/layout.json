@@ -1,8 +1,7 @@
 {
-    "room": {
-        "l": 10,
-        "w": 10
-    },
-    "bed": {"l": 5, "w": 6, "x": 0, "y": 2.5, "z": 0, "rotation": 0},
-    "nightstand": {"l": 1, "w": 1, "x": 2, "y": 5, "z":0, "rotation": 0}
-  }
+  "room": {"l": 14, "w": 10, "x": 0, "y": 0},
+  "bed": {"l": 5, "w": 6, "x": 0, "y": -4.5, "rotation": 90},
+  "nightstand": {"l": 2, "w": 2, "x": -4, "y": -6, "rotation": 90},
+  "wardrobe": {"l": 2, "w": 6, "x": 0, "y": 6, "rotation": 90}
+}
+

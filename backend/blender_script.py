@@ -5,8 +5,9 @@ import os
 import mathutils
 
 # === CONFIG ===
-INPUT_JSON = "backend/layout.json"
-FURNITURE_DIR = "furniture"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+INPUT_JSON = os.path.join(BASE_DIR, "layout.json")
+FURNITURE_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "furniture"))
 
 # === Clear scene ===
 bpy.ops.object.select_all(action='SELECT')
@@ -16,11 +17,62 @@ bpy.ops.object.delete(use_global=False)
 with open(INPUT_JSON, "r") as f:
     layout = json.load(f)
 
+# === Rotation and Axis Mapping Configs ===
+furniture_rotations = {
+    "bed": (math.radians(-90), 0, 0),
+    "chair": (math.radians(-90), 0, 0),
+    "desk": (math.radians(-90), 0, 0),
+    "nightstand": (math.radians(-90), 0, 0),
+    "couch": (math.radians(-90), 0, 0),
+    "table": (0, 0, 0),
+    "wardrobe": (0, 0, 0),
+    "bookshelf": (0, 0, 0),
+    "window": (0,0,0),
+    "fridge": (math.radians(-90), 0, 0)
+}
+
+# These define how the original x/y/z inputs from layout map to Blender's X/Y/Z
+furniture_coordinate_mapping = {
+    "bed": {"x": "z", "y": "y", "z": "x"},
+    "chair": {"x": "x", "y": "y", "z": "z"},
+    "desk": {"x": "x", "y": "y", "z": "z"},
+    "nightstand": {"x": "z", "y": "y", "z": "x"},
+    "couch": {"x": "x", "y": "y", "z": "z"},
+    "table": {"x": "x", "y": "y", "z": "z"},
+    "wardrobe": {"x": "x", "y": "y", "z": "z"},
+    "bookshelf": {"x": "x", "y": "y", "z": "z"},
+    "window": {"x": "x", "y": "y", "z": "z"}
+}
+
+layout2 = {
+  "room": {
+    "l": 5.0,
+    "w": 4.5,
+    "x": 0,
+    "y": 0
+  },
+  "bed": {
+    "l": 2.0,
+    "w": 1.4,
+    "x": 2.5,
+    "y": 3.8,
+    "rotation": 0
+  },
+  "desk": {
+    "l": 1.2,
+    "w": 0.6,
+    "x": 0.3,
+    "y": 1.1,
+    "rotation": 90
+  }
+}
+
+
 room_size = layout.get("room", {})
 room_length = room_size.get("l", 10)
 room_width = room_size.get("w", 10)
 
-# === Create room floor ===
+# === Create Room Floor ===
 bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 0, 0))
 floor = bpy.context.active_object
 floor.scale = (room_length, room_width, 1)
@@ -29,7 +81,6 @@ floor.name = "Room_Floor"
 def scale_object_to_exact_dimensions(obj, target_x, target_y, target_z=1.0):
     if obj.type != 'MESH':
         return
-
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -48,8 +99,6 @@ def scale_object_to_exact_dimensions(obj, target_x, target_y, target_z=1.0):
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
 def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
-    import mathutils
-
     folder = os.path.join(FURNITURE_DIR, name)
     path = os.path.abspath(os.path.join(folder, "scene.gltf"))
 
@@ -59,7 +108,6 @@ def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
 
     print(f"📦 Importing {name}")
     before = set(bpy.data.objects)
-
     bpy.ops.import_scene.gltf('EXEC_DEFAULT', filepath=path)
     after = set(bpy.data.objects)
     new_objects = list(after - before)
@@ -68,25 +116,39 @@ def place_model(name, x, y, z, rotation_deg=0, target_w=2.0, target_l=2.0):
         print(f"⚠️ Failed to import {name}")
         return
 
-    # Create group empty at target position
-    bpy.ops.object.empty_add(type='PLAIN_AXES', location=(x, y, z))
+    # coords_dict = {"x": x, "y": y, "z": z}
+    # mapping = furniture_coordinate_mapping.get(name, {"x": "x", "y": "y", "z": "z"})
+    # remapped_location = (
+    #     coords_dict[mapping["x"]],
+    #     coords_dict[mapping["y"]],
+    #     coords_dict[mapping["z"]]
+    # )
+
+    # bpy.ops.object.empty_add(type='PLAIN_AXES', location=remapped_location)
+    bpy.ops.object.empty_add(type='PLAIN_AXES', location=(x, y, 0))
     group = bpy.context.active_object
     group.name = f"{name}_group"
+    group.rotation_euler = furniture_rotations.get(name, (0, 0, 0))
 
     for obj in new_objects:
         obj.select_set(True)
         obj.parent = group
-        obj.location -= group.location
-
-        # Rotate upright
-        obj.rotation_euler = (math.radians(-90), 0, 0)
+        # obj.location -= group.location
+        obj.location = (0,0,0)
+        print (name + ": " + group.location.__str__())
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
 
-        # Scale to match dimensions
-        scale_object_to_exact_dimensions(obj, target_w, 1.0, target_l)
+        # ⚠ Here we assume target_w → X, target_l → Y
+        scale_object_to_exact_dimensions(obj, target_w, target_l, 1.0)
+        
+        # Move object so it sits on the floor
+        bbox = [obj.matrix_world @ mathutils.Vector(corner) for corner in obj.bound_box]
+        min_z = min([v.z for v in bbox])
+        obj.location.z -= min_z
 
+        
 # === Place all furniture ===
-for key, value in layout.items():
+for key, value in layout2.items():
     if key == "room":
         continue
 
@@ -94,8 +156,29 @@ for key, value in layout.items():
         name=key,
         x=value["x"],
         y=value["y"],
-        z = 0,
+        z=0,
         rotation_deg=value.get("rotation", 0),
         target_w=value.get("w", 2),
         target_l=value.get("l", 2)
     )
+
+
+# Target export path: ../blender_model/room.glb
+output_path = os.path.abspath(os.path.join(BASE_DIR, "..", "blender_model", "room.glb"))
+
+# Export the current scene as GLB
+bpy.ops.export_scene.gltf(
+    filepath=output_path,
+    export_format='GLB',
+    export_apply=True,
+    export_yup=True,
+    export_texcoords=True,
+    export_normals=True,
+    export_materials='EXPORT',
+    export_animations=False
+)
+
+
+print(f"✅ Exported room.glb to: {output_path}")
+
+

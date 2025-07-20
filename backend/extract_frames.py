@@ -86,4 +86,4 @@ if __name__ == "__main__":
 
     ts_to_objects = parse_objects_by_timestamp(timestamps_file)
     extract_frames_from_objects(video_file, ts_to_objects, "../pictures")
-    clear_folder(video_folder)
+    # clear_folder(video_folder)

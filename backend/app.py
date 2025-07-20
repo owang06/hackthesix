@@ -6,6 +6,7 @@ import threading
 import time
 from twelve_labs import process_video
 from extract_frames import parse_objects_by_timestamp, extract_frames_from_objects
+from flask import Flask, request, jsonify, send_from_directory
 
 app = Flask(__name__)
 CORS(app)
@@ -129,6 +130,11 @@ def extract_frames_route():
         return jsonify({'message': f'Frames extracted to {output_folder}'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route("/models/<filename>")
+def serve_model(filename):
+    model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "blender_model"))
+    return send_from_directory(model_path, filename)
 
 if __name__ == "__main__":
     app.run(debug=True)

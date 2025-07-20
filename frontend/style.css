@@ -1,8 +1,14 @@
 body {
   margin: 0;
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-  background: #f5f5f7;
-  color: #1d1d1f;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  background: #e6f3ff;
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: #2c1810;
+  min-height: 100vh;
+  image-rendering: pixelated;
 }
 
 
@@ -46,10 +52,12 @@ body {
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 400;
   margin-bottom: 48px;
-  color: #6e6e73;
+  color: #4a4a4a;
+  text-shadow: 1px 1px 0px #fff;
+  line-height: 1.6;
 }
 
 .upload-container {
@@ -60,23 +68,29 @@ body {
 
 .upload-area {
   background: #fff;
-  border: 2px dashed #d2d2d7;
-  border-radius: 20px;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 60px 40px;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
   cursor: pointer;
+  box-shadow: 3px 3px 0px #000;
+  position: relative;
+  margin: 20px;
 }
 
 .upload-area:hover {
-  border-color: #0071e3;
-  background: #f8f9fa;
+  border-color: #80b3ff;
+  background: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #80b3ff;
 }
 
 .upload-area.dragover {
-  border-color: #0071e3;
-  background: #f0f8ff;
-  transform: scale(1.02);
+  border-color: #6366f1;
+  background: #f0f4ff;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #6366f1;
 }
 
 .upload-content {
@@ -92,16 +106,20 @@ body {
 }
 
 .upload-content h3 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
-  color: #1d1d1f;
+  color: #2c1810;
+  text-shadow: 1px 1px 0px #fff;
+  line-height: 1.4;
 }
 
 .upload-content p {
-  font-size: 1rem;
-  color: #6e6e73;
+  font-size: 0.8rem;
+  color: #4a4a4a;
   margin: 0;
+  text-shadow: 1px 1px 0px #fff;
+  line-height: 1.4;
 }
 
 .upload-content .drag-hint {
@@ -112,38 +130,48 @@ body {
 }
 
 .upload-btn {
-  background: #0071e3;
-  color: #fff;
-  border: none;
-  border-radius: 20px;
+  background: #fff;
+  color: #2c1810;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 12px 32px;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.1s ease;
   margin-top: 16px;
+  font-family: 'Press Start 2P', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 2px 2px 0px #000;
 }
 
 .upload-btn:hover {
-  background: #005bb5;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,113,227,0.3);
+  background: #e6f3ff;
+  color: #2c1810;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px #000;
 }
 
 .video-preview {
   background: #fff;
-  border-radius: 20px;
-  padding: 40px;
+  border: 2px solid #000;
+  border-radius: 0;
+  padding: 30px 20px;
   text-align: center;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  box-shadow: 3px 3px 0px #000;
+  margin: 15px auto;
+  max-width: 400px;
+  width: 80%;
 }
 
 #previewVideo {
   width: 100%;
-  max-width: 500px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  max-width: 300px;
+  border-radius: 0;
+  margin-bottom: 16px;
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0px #000;
 }
 
 .preview-actions {
@@ -154,52 +182,63 @@ body {
 }
 
 .cta-btn {
-  background: #0071e3;
-  color: #fff;
-  border: none;
-  border-radius: 20px;
+  background: #fff;
+  color: #2c1810;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 12px 32px;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.1s ease;
   text-decoration: none;
   display: inline-block;
+  font-family: 'Press Start 2P', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 2px 2px 0px #000;
 }
 
 .cta-btn:hover {
-  background: #005bb5;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,113,227,0.3);
+  background: #4f46e5;
+  color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px #000;
 }
 
 .secondary-btn {
-  background: transparent;
-  color: #0071e3;
-  border: 2px solid #0071e3;
-  border-radius: 20px;
+  background: #fff;
+  color: #2c1810;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 10px 30px;
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: 'Press Start 2P', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 2px 2px 0px #000;
 }
 
 .secondary-btn:hover {
-  background: #0071e3;
-  color: #fff;
+  background: #80b3ff;
+  color: #2c1810;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px #000;
 }
 
 .upload-status {
   margin-top: 24px;
   font-size: 1rem;
-  color: #0071e3;
+  color: #2c1810;
   min-height: 24px;
   font-weight: 500;
 }
 
 .upload-status.success {
-  color: #28a745;
+  color: #2c1810;
 }
 
 .upload-status.error {
@@ -215,27 +254,29 @@ body {
 .progress-bar {
   width: 100%;
   height: 8px;
-  background: #e5e5e7;
-  border-radius: 4px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 0;
   overflow: hidden;
   margin-bottom: 12px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 2px 2px 0px #000;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #0071e3, #005bb5);
-  border-radius: 4px;
+  background: #0071e3;
+  border-radius: 0;
   width: 0%;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0,113,227,0.3);
 }
 
 .progress-text {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #0071e3;
+  color: #2c1810;
   margin-top: 8px;
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 1px 1px 0px #fff;
 }
 
 @media (max-width: 700px) {

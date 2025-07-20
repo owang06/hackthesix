@@ -9,6 +9,8 @@ const changeVideoBtn = document.getElementById('changeVideoBtn');
 const newUploadBtn = document.getElementById('newUploadBtn');
 const uploadStatus = document.getElementById('uploadStatus');
 
+
+
 // Debug: Check if elements are found
 // DOM elements found successfully
 const progressContainer = document.getElementById('progressContainer');

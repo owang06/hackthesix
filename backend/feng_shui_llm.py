@@ -32,7 +32,7 @@ door
 couch 
 table 
 bookshelf
-mini-fridge
+fridge
 window
 
 

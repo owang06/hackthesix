@@ -23,27 +23,32 @@
 # 3.75s - Window:.jpg
 {
   'object': 'Window',
-  'length': 2.0,
+  'length': 2.5,
   'width': 1.5,
-  'height': 1.5
+  'height': 1.8
 }
 
 # 10.75s - Rug: Door:.jpg
 {
-    "object": "Rug",
-    "length": 0.7,
-    "width": 0.5,
-    "height": 0
-  }
+  "object": "Rug",
+  "length": 0.7,
+  "width": 0.6,
+  "height": 0
+}
 {
-    "object": "Door",
-    "length": 0,
-    "width": 0.8,
-    "height": 2.0
-  }
+  "object": "Door",
+  "length": 0,
+  "width": 0.8,
+  "height": 2.1
+}
 
 # 8.75s - Wardrobe:.jpg
-{'object': 'Wardrobe', 'length': 0.6, 'width': 1.5, 'height': 2.0}
+{
+  'object': 'Wardrobe',
+  'length': 0.6,
+  'width': 1.2,
+  'height': 2.1
+}
 
 # 7.75s - Mini-fridge: Drawer:.jpg
 {
@@ -60,4 +65,4 @@
 }
 
 # Room Size Estimation
-{'length': 9.1, 'width': 7.5}
+{'length': 6.2, 'width': 3.8}

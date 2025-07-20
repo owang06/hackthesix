@@ -168,6 +168,11 @@ newUploadBtn.addEventListener('click', async () => {
       updateStatus('Feng-shuification completed! Frames extracted and analyzed with Gemini.', 'success');
       newUploadBtn.textContent = 'Feng-shuify Complete';
       newUploadBtn.style.background = '#28a745';
+
+      // --- Show the viewer panel and move UI left ---
+      document.querySelector('.hero').style.width = '50vw';
+      document.querySelector('.hero').style.float = 'left';
+      document.getElementById('viewerPanel').style.display = 'flex';
     } else {
       updateStatus('Feng-shuification failed: ' + (result.error || response.statusText), 'error');
       newUploadBtn.textContent = 'Feng-shuify Failed';

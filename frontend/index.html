@@ -13,14 +13,12 @@
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="nav-logo"></div>
-    <ul class="nav-links">
-    </ul>
-  </nav>
-  
   <section class="hero">
-    <h1 class="hero-title">Video Analysis</h1>
+    <div class="hero-logo">
+      <button class="logo-button" onclick="resetToHome()">
+        <img src="foorprinttt.png" alt="Logo" class="logo-image">
+      </button>
+    </div>
     <p class="hero-subtitle">Upload your video to analyze furniture and objects</p>
     
     <div class="upload-container">
@@ -42,6 +40,14 @@
           <button id="uploadVideoBtn" class="cta-btn">Upload & Analyze</button>
           <button id="changeVideoBtn" class="secondary-btn">Choose Different Video</button>
           <button id="newUploadBtn" class="secondary-btn" style="display: none;">Upload Another Video</button>
+        </div>
+        
+        <!-- Progress bar container -->
+        <div id="progressContainer" class="progress-container" style="display: none;">
+          <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+          <div id="progressText" class="progress-text">0%</div>
         </div>
       </div>
     </div>

@@ -5,45 +5,7 @@ body {
   color: #1d1d1f;
 }
 
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  height: 56px;
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(10px);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-}
 
-.nav-logo {
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 32px;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: #1d1d1f;
-  font-weight: 500;
-  font-size: 1rem;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover {
-  color: #0071e3;
-}
 
 .hero {
   display: flex;
@@ -55,10 +17,31 @@ body {
   padding: 60px 20px 0 20px;
 }
 
-.hero-title {
-  font-size: 3rem;
-  font-weight: 700;
+.hero-logo {
   margin-bottom: 16px;
+}
+
+.logo-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.logo-button:hover {
+  transform: scale(1.05);
+}
+
+.logo-button:active {
+  transform: scale(0.98);
+}
+
+.logo-image {
+  max-width: 300px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
 }
 
 .hero-subtitle {
@@ -222,9 +205,41 @@ body {
   color: #dc3545;
 }
 
+/* Progress bar styles */
+.progress-container {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e5e7;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0071e3, #005bb5);
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0,113,227,0.3);
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0071e3;
+  margin-top: 8px;
+}
+
 @media (max-width: 700px) {
-  .hero-title {
-    font-size: 2rem;
+  .logo-image {
+    max-width: 200px;
   }
   
   .hero-subtitle {
@@ -238,13 +253,5 @@ body {
   .preview-actions {
     flex-direction: column;
     align-items: center;
-  }
-  
-  .navbar {
-    padding: 0 12px;
-  }
-  
-  .nav-links {
-    gap: 16px;
   }
 } 

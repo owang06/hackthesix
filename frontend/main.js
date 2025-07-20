@@ -11,6 +11,9 @@ const uploadStatus = document.getElementById('uploadStatus');
 
 // Debug: Check if elements are found
 // DOM elements found successfully
+const progressContainer = document.getElementById('progressContainer');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
 
 // Store the selected file globally
 let selectedFile = null;
@@ -52,6 +55,7 @@ function createAndTriggerFileInput() {
   document.body.appendChild(tempFileInput);
   tempFileInput.click();
 }
+let progressInterval = null; // For managing staged progress updates
 
 // Event listeners
 uploadBtn.addEventListener('click', (e) => {
@@ -173,8 +177,16 @@ function resetUploadState() {
   uploadVideoBtn.style.background = '#0071e3';
   newUploadBtn.style.display = 'none';
   
+  // Hide progress bar
+  hideProgressBar();
+  
   // Clear status
   updateStatus('');
+}
+
+// Reset to home function (for logo button)
+function resetToHome() {
+  resetUploadState();
 }
 
 // Upload video button
@@ -264,6 +276,9 @@ if (uploadVideoBtn) {
       uploadVideoBtn.disabled = true;
       uploadVideoBtn.style.background = '#ff9500'; // Orange color for processing
       
+      // Start staged progress updates
+      startStagedProgress();
+      
       // Start polling for status updates
       pollProcessingStatus(videoId);
       
@@ -318,6 +333,7 @@ if (uploadVideoBtn) {
       }, 5000);
     } else {
       uploadInProgress = false;
+      hideProgressBar();
       updateStatus('Upload failed: ' + (result.error || response.statusText), 'error');
       uploadVideoBtn.disabled = false;
       uploadVideoBtn.textContent = 'Upload & Analyze';
@@ -328,6 +344,7 @@ if (uploadVideoBtn) {
     console.log('=== UPLOAD ERROR ===');
     console.error('Upload error:', err);
     uploadInProgress = false;
+    hideProgressBar();
     updateStatus('Upload error: ' + err.message, 'error');
     uploadVideoBtn.disabled = false;
     uploadVideoBtn.textContent = 'Upload & Analyze';
@@ -363,6 +380,9 @@ async function pollProcessingStatus(videoId) {
           uploadCompleted = true;
           localStorage.setItem('uploadCompleted', 'true');
           
+          // Complete the progress bar
+          updateProgress(100);
+          
           uploadVideoBtn.textContent = 'Processing Complete';
           uploadVideoBtn.style.background = '#28a745'; // Green color for success
           newUploadBtn.style.display = 'inline-block'; // Show new upload button
@@ -378,6 +398,7 @@ async function pollProcessingStatus(videoId) {
           return; // Stop polling
         } else if (status.status === 'error') {
           // Processing failed
+          hideProgressBar();
           uploadVideoBtn.textContent = 'Processing Failed';
           uploadVideoBtn.style.background = '#dc3545'; // Red color for error
           uploadVideoBtn.disabled = false;
@@ -396,6 +417,7 @@ async function pollProcessingStatus(videoId) {
       setTimeout(poll, 5000); // Poll every 5 seconds
     } else {
       // Timeout
+      hideProgressBar();
       updateStatus('Processing timeout - please try again', 'error');
       uploadVideoBtn.textContent = 'Processing Timeout';
       uploadVideoBtn.style.background = '#dc3545';
@@ -438,6 +460,77 @@ window.showPreview = function() {
   videoPreview.style.display = 'block';
   console.log('Video preview display:', videoPreview.style.display);
 };
+
+// Show progress bar
+function showProgressBar() {
+  progressContainer.style.display = 'block';
+  progressFill.style.width = '0%';
+  progressText.textContent = '0%';
+}
+
+// Hide progress bar
+function hideProgressBar() {
+  progressContainer.style.display = 'none';
+  if (progressInterval) {
+    clearInterval(progressInterval);
+    progressInterval = null;
+  }
+}
+
+// Update progress bar
+function updateProgress(percentage) {
+  progressFill.style.width = percentage + '%';
+  progressText.textContent = percentage + '%';
+}
+
+// Start staged progress updates
+function startStagedProgress() {
+  showProgressBar();
+  
+  // Clear any existing interval
+  if (progressInterval) {
+    clearInterval(progressInterval);
+  }
+  
+  let currentStage = 0;
+  const stages = [
+    { progress: 25, delay: 2000, message: 'Analyzing video frames...' },
+    { progress: 50, delay: 3000, message: 'Detecting furniture and objects...' },
+    { progress: 75, delay: 4000, message: 'Processing spatial relationships...' },
+    { progress: 99, delay: 6000, message: 'Almost done... (this might take a moment 😅)' }
+  ];
+  
+  const updateStage = () => {
+    if (currentStage < stages.length) {
+      const stage = stages[currentStage];
+      updateProgress(stage.progress);
+      updateStatus(stage.message, 'success');
+      currentStage++;
+    }
+  };
+  
+  // Start with first stage immediately
+  updateStage();
+  
+  // Schedule subsequent stages
+  let totalDelay = 0;
+  for (let i = 1; i < stages.length; i++) {
+    totalDelay += stages[i-1].delay;
+    setTimeout(() => {
+      updateStage();
+    }, totalDelay);
+  }
+  
+  // After all stages, keep it at 99% for a while before completing
+  const totalStagesDelay = stages.reduce((sum, stage) => sum + stage.delay, 0);
+  setTimeout(() => {
+    // Keep at 99% for a bit longer for the "stuck" effect
+    setTimeout(() => {
+      updateProgress(100);
+      updateStatus('Processing completed successfully!', 'success');
+    }, 2000); // Wait 2 more seconds at 99%
+  }, totalStagesDelay);
+}
 
 // Fade-in animation for hero section
 window.addEventListener('DOMContentLoaded', () => {
@@ -498,20 +591,6 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-  
-  const hero = document.querySelector('.hero');
-  hero.style.opacity = 0;
-  hero.style.transform = 'translateY(40px)';
-  setTimeout(() => {
-    hero.style.transition = 'opacity 1s cubic-bezier(.4,0,.2,1), transform 1s cubic-bezier(.4,0,.2,1)';
-    hero.style.opacity = 1;
-    hero.style.transform = 'translateY(0)';
-  }, 100);
-});
-
-// Check for page unload/reload
-window.addEventListener('beforeunload', () => {
-  console.log('=== PAGE UNLOADING ===');
 });
 
 // Check for page visibility changes
@@ -522,15 +601,22 @@ document.addEventListener('visibilitychange', () => {
 // Prevent page unload during and after upload
 // Variables already declared at the top
 
-// Remove the duplicate beforeunload listener since we moved it to DOMContentLoaded
-
-// Only prevent form submissions if they're not our upload
+// Prevent accidental form submissions that might cause page refresh
 document.addEventListener('submit', (e) => {
-  // Only prevent if it's not our video upload
-  if (!e.target.closest('.upload-container')) {
+  // Only prevent if it's not our video upload and not a real form
+  if (!e.target.closest('.upload-container') && e.target.tagName === 'FORM') {
     console.log('=== FORM SUBMIT PREVENTED ===');
     e.preventDefault();
     e.stopPropagation();
     return false;
+  }
+});
+
+// Prevent page refresh during upload
+window.addEventListener('beforeunload', (e) => {
+  if (uploadInProgress) {
+    e.preventDefault();
+    e.returnValue = 'Upload in progress. Are you sure you want to leave?';
+    return e.returnValue;
   }
 }); 
